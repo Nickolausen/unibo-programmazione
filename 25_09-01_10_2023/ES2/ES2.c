@@ -1,7 +1,7 @@
 #include <stdio.h>
 // Constant declaration - necessary to conversions
 #define CONV_G_IN_L 3.78541
-#define CONV_MIN_KIM 1.60934
+#define CONV_M_IN_KM 1.60934
 
 /*
     Group components:
@@ -13,7 +13,7 @@
 
 int main()
 {
-    float migliaPercorse, galloniConsumati, galloniPerMiglia, kmSuLitro;
+    float migliaPercorse, galloniConsumati, migliaPerGallone, kmSuLitro;
 
     // Asking the user to type the miles travelled, then storing the value in the
     // specific variable
@@ -24,17 +24,17 @@ int main()
     printf("Insert gallons consumed: ");
     scanf("%f", &galloniConsumati);
 
-    // Calculating the gallons consumed per miles
-    galloniPerMiglia = galloniConsumati / migliaPercorse;
+    // Calculating the miles per gallons
+    migliaPerGallone = migliaPercorse / galloniConsumati;
 
     // Displaying the result with a 2-digit approx.
-    printf("Gallon per miles calculated: %.2f\n", galloniPerMiglia);
+    printf("Miles per gallon calculated: %.2f\n", migliaPerGallone);
 
-    // Converting gallons per miles to the kilometers kilometers per litre
-    kmSuLitro = (galloniConsumati * CONV_G_IN_L) / (migliaPercorse * CONV_MIN_KIM);
+    // Converting miles per gallons to the litres per 100 kilometers
+    kmSuLitro = (galloniConsumati * CONV_G_IN_L) / (migliaPercorse * CONV_M_IN_KM * 100);
     
     // Displaying the result with a 3-digit approx.
-    printf("KM/Litres (european formatting): %.3f\n", kmSuLitro);
+    printf("KM/(Litres * 100) (european formatting): %.3f\n", kmSuLitro);
 
     return 0;
 }
