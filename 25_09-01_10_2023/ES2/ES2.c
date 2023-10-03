@@ -31,11 +31,10 @@ int main()
     printf("Miles per gallon calculated: %.2f\n", migliaPerGallone);
 
     // Converting miles per gallons to the litres per 100 kilometers
-    litriSuKM = (galloniConsumati * CONV_G_IN_L) / (migliaPercorse * CONV_M_IN_KM * 100);
+    litriSuKM = (galloniConsumati * CONV_G_IN_L * 100) / (migliaPerGallone * CONV_M_IN_KM);
     
     // Displaying the result with a 3-digit approx.
-    printf("Litres/(KM * 100) (european formatting): %.3f\n", litriSuKM);
+    printf("Litres per 100 KM (european formatting): %.3f\n", litriSuKM);
 
-    exit(0);
     return 0;
 }
