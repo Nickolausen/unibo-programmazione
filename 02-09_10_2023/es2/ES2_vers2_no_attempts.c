@@ -2,7 +2,8 @@
 #include <stdlib.h> // Library needed to use random generator
 #include <time.h> // Library needed to access time functions
 
-#define CLEAR_SCREEN system("clear") // Clear previous messages in the terminal console
+#define CLEAR_SCREEN_LINUX system("clear") // Clear previous messages in the terminal console (linux terminal)
+#define CLEAR_SCREEN_WIN system("cls") // Clear previous messages in the terminal console (windows terminal)
 
 /*
     Group components:
@@ -18,7 +19,12 @@ int main()
     // so it generates a different set of number each run
     srand(time(0));
 
-    CLEAR_SCREEN;
+    // Using a proper terminal cleaning command,
+    // based on the Operating System the program is running on
+    if (CLEAR_SCREEN_LINUX == 1)
+        CLEAR_SCREEN_WIN;
+    else
+        CLEAR_SCREEN_LINUX;
 
     // Asking the user to input the minimum number CPU can generate,
     // ensuring it is not less than zero
@@ -50,24 +56,31 @@ int main()
         fflush(stdin);
 
         if (numberToGuess < lowerBound || numberToGuess > upperBound)
-            printf("Input not between %d and %d!\n: ", lowerBound, upperBound);
+            printf("Input not between %d and %d!\n", lowerBound, upperBound);
 
     } while (numberToGuess < lowerBound || numberToGuess > upperBound);
 
     // Generating the first CPU guess, included in min <= CPUGuess <= max
     int CPUGuess = rand() % (upperBound - lowerBound + 1) + lowerBound;
-    int nrAttemps = 1;
+    int nrAttempts = 1;
 
     while (CPUGuess != numberToGuess) 
     {
         char userTip = '!';
 
-        CLEAR_SCREEN;
+        // Using a proper terminal cleaning command,
+        // based on the Operating System the program is running on
+        if (CLEAR_SCREEN_LINUX == 1)
+            CLEAR_SCREEN_WIN;
+        else
+            CLEAR_SCREEN_LINUX;
+
+        printf("Attempt #%d\n", nrAttempts);
         printf("CPU generated number: %d! {Number to guess: %d}\n", CPUGuess, numberToGuess);
         do
         {
             fflush(stdin);
-            puts("\n- Tell him if the number is greater (>) or smaller (<) than the number to be guessed...");
+            puts("\n- Tell it if its guess is greater (>) or smaller (<) than the number to be guessed...");
             scanf("%c", &userTip);
 
             // Displaying an error message if the user typed an unexpected character
@@ -78,7 +91,7 @@ int main()
             
         } while ((userTip != '>') && (userTip != '<'));
         
-        // Changing the range boundaries based on the user suggestions
+        // Changing the range boundaries based on the user suggestion
         if (userTip == '>') 
             lowerBound = CPUGuess + 1;
         else
@@ -86,11 +99,11 @@ int main()
 
         // Generating another guess within the new range
         CPUGuess = rand() % (upperBound - lowerBound + 1) + lowerBound;
-        
-        nrAttemps++;
+
+        nrAttempts++;
     }
 
-    printf("CPU has won the game in just %d attemps!", nrAttemps);
+    printf("CPU has won the game in just %d attempts!", nrAttempts);
 
     exit(0);
     return 0;
