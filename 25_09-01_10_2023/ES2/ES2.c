@@ -1,7 +1,11 @@
 #include <stdio.h>
-// Constant declaration - necessary to conversions
-#define CONV_G_IN_L 3.78541
-#define CONV_M_IN_KM 1.60934
+#include <stdlib.h>
+
+// Constant declaration - necessary to conversion
+#define FATTORE_CONVERSIONE 235.214f
+
+#define CLEAR_SCREEN_LINUX system("clear") // Clear previous messages in the terminal console (linux terminal)
+#define CLEAR_SCREEN_WIN system("cls") // Clear previous messages in the terminal console (windows terminal)
 
 /*
     Group components:
@@ -13,6 +17,13 @@
 
 int main()
 {
+    // Using a proper terminal cleaning command,
+    // based on the Operating System the program is running on
+    if (CLEAR_SCREEN_LINUX == 1)
+        CLEAR_SCREEN_WIN;
+    else
+        CLEAR_SCREEN_LINUX;
+
     float migliaPercorse, galloniConsumati, migliaPerGallone, litriSuKM;
 
     // Asking the user to type the miles travelled, then storing the value in the
@@ -30,8 +41,8 @@ int main()
     // Displaying the result with a 2-digit approx.
     printf("Miles per gallon calculated: %.2f\n", migliaPerGallone);
 
-    // Converting miles per gallons to the litres per 100 kilometers
-    litriSuKM = (galloniConsumati * CONV_G_IN_L * 100) / (migliaPerGallone * CONV_M_IN_KM);
+    // Converting MPG to the L/100 kilometers
+    litriSuKM = FATTORE_CONVERSIONE / migliaPerGallone;
     
     // Displaying the result with a 3-digit approx.
     printf("Litres per 100 KM (european formatting): %.3f\n", litriSuKM);
