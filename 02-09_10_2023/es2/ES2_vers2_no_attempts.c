@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h> // Library needed to use random generator
 #include <time.h> // Library needed to access time functions
+#include <stdbool.h>
 
-#define CLEAR_SCREEN_LINUX system("clear") // Clear previous messages in the terminal console (linux terminal)
-#define CLEAR_SCREEN_WIN system("cls") // Clear previous messages in the terminal console (windows terminal)
+#define CLEAR_CONSOLE system("clear") == 1 ? system("cls") : system("clear")
 
 /*
     Group components:
@@ -19,12 +19,7 @@ int main()
     // so it generates a different set of number each run
     srand(time(0));
 
-    // Using a proper terminal cleaning command,
-    // based on the Operating System the program is running on
-    if (CLEAR_SCREEN_LINUX == 1)
-        CLEAR_SCREEN_WIN;
-    else
-        CLEAR_SCREEN_LINUX;
+    CLEAR_CONSOLE;
 
     // Asking the user to input the minimum number CPU can generate,
     // ensuring it is not less than zero
@@ -46,61 +41,51 @@ int main()
         scanf("%d", &upperBound);
     } while (upperBound < lowerBound);
 
-    // Asking the user to input the number CPU has to guess,
-    // ensuring it is included in the range min <= number <= max
-    int numberToGuess;
-    do
-    {
-        printf("Insert the number CPU has to guess [INPUT has to be between %d and %d]: ", lowerBound, upperBound);
-        scanf("%d", &numberToGuess);
-        fflush(stdin);
-
-        if (numberToGuess < lowerBound || numberToGuess > upperBound)
-            printf("Input not between %d and %d!\n", lowerBound, upperBound);
-
-    } while (numberToGuess < lowerBound || numberToGuess > upperBound);
-
-    // Generating the first CPU guess, included in min <= CPUGuess <= max
-    int CPUGuess = rand() % (upperBound - lowerBound + 1) + lowerBound;
     int nrAttempts = 1;
 
-    while (CPUGuess != numberToGuess) 
+    bool numberGuessed = false;
+    while (!numberGuessed) 
     {
         char userTip = '!';
+        
+        // Generating the CPU guess, included in min <= CPUGuess <= max
+        int CPUGuess = rand() % (upperBound - lowerBound + 1) + lowerBound;
 
-        // Using a proper terminal cleaning command,
-        // based on the Operating System the program is running on
-        if (CLEAR_SCREEN_LINUX == 1)
-            CLEAR_SCREEN_WIN;
-        else
-            CLEAR_SCREEN_LINUX;
+        CLEAR_CONSOLE;
 
         printf("Attempt #%d\n", nrAttempts);
-        printf("CPU generated number: %d! {Number to guess: %d}\n", CPUGuess, numberToGuess);
+        printf("CPU generated number: %d!\n", CPUGuess);
         do
         {
             fflush(stdin);
-            puts("\n- Tell it if its guess is greater (>) or smaller (<) than the number to be guessed...");
+            puts("\n- Tell it if its guess is greater than (>), smaller than (<) or equal to (=) the number to be guessed...");
             scanf("%c", &userTip);
 
             // Displaying an error message if the user typed an unexpected character
-            if ((userTip != '>') && (userTip != '<')) 
+            if ((userTip != '>') && (userTip != '<') && (userTip != '=')) 
             {
-                printf("\nPlease type '<' or '>' to continue...");
+                printf("\nPlease type '<' - '>' - '=' to continue...");
             }
             
-        } while ((userTip != '>') && (userTip != '<'));
+        } while ((userTip != '>') && (userTip != '<') && (userTip != '='));
         
-        // Changing the range boundaries based on the user suggestion
-        if (userTip == '>') 
-            lowerBound = CPUGuess + 1;
-        else
-            upperBound = CPUGuess - 1;
+        switch (userTip)
+        {
+            case '>':
+                lowerBound = CPUGuess + 1;
+                nrAttempts++;
+            break;
+        
+            case '<':
+                upperBound = CPUGuess - 1;
+                nrAttempts++;
+            break;
 
-        // Generating another guess within the new range
-        CPUGuess = rand() % (upperBound - lowerBound + 1) + lowerBound;
+            case '=':
+                numberGuessed = true;
+            break;
 
-        nrAttempts++;
+        }
     }
 
     printf("CPU has won the game in just %d attempts!", nrAttempts);
