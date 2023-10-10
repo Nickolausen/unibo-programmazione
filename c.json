@@ -1,0 +1,15 @@
+{
+	"Garpez components": {
+		"prefix": "gcomponents",
+		"body": [
+			"/*",
+			"\tGroup components:",
+			"\t> Nicholas Magi <nicholas.magi@studio.unibo.it>;",
+			"\t> Tommaso Maestri <tommaso.maestri@studio.unibo.it>;",
+			"\t> Leonardo Perretta <leonardo.perretta2@studio.unibo.it>;",
+			"\t> Riccardo Ventrucci <riccardo.ventrucci@studio.unibo.it>;",
+			"*/"
+		],
+		"description": "Template to generate Team Garpez's contacts"
+	}
+}
