@@ -11,5 +11,11 @@
 			"*/"
 		],
 		"description": "Template to generate Team Garpez's contacts"
+	},
+	"Clear console": {
+		"prefix": "clearconsole",
+		"body":[
+			"#define CLEAR_CONSOLE system(\"clear\") == 1 ? system(\"cls\") : system(\"clear\")"
+		]
 	}
 }
