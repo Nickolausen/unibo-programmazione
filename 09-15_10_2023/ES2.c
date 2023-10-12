@@ -11,29 +11,33 @@
     > Riccardo Ventrucci <riccardo.ventrucci@studio.unibo.it>;
 */
 
+typedef struct Statistiche {
+    int nrAlphanumeric = 0;
+    int nrAlpha = 0;
+    int nrControl = 0;
+    int nrDigit = 0;
+    int nrGraph = 0;
+    int nrLower = 0;
+    int nrPrint = 0;
+    int nrPunct = 0;
+    int nrSpace = 0;
+    int nrUpper = 0;
+    int nrXDigit = 0;
+} Statistiche;
+
 int main()
 {
     CLEAR_CONSOLE;
     char c;
 
-    int nAlphanumeric = 0;
-    int nAlpha = 0;
-    int nControl = 0;
-    int nDigit = 0;
-    int nGraph = 0;
-    int nLower = 0;
-    int nPrint = 0;
-    int nPunct = 0;
-    int nSpace = 0;
-    int nUpper = 0;
-    int nXDigit = 0;
+    Statistiche stats;
     char * sLower;
     char * sUpper;
 
-    while ((c = getchar()) != '#')
+    while ((c = getchar()) != EOF)
     {
         if(isalnum(c))
-            nAlphanumeric++;
+            stats.nAlphanumeric++;
         if(isalpha(c))
             nAlpha++;
         if(iscntrl(c))
