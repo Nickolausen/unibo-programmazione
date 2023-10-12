@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <float.h>
 #include <string.h>
 #include <time.h>
 
@@ -56,31 +55,31 @@ int main(){
 
     // continenti modello ONU quindi 5
     struct Continente america;
-    strcpy(america.nome, "America");
+    strcpy(america.nome, "america");
     america.confineAltoSinistro.latitudine = 100;
     america.confineAltoSinistro.longitudine = 0;
     america.confineBassoDestro.latitudine = 0;
     america.confineBassoDestro.longitudine = 50;
     struct Continente europa;
-    strcpy(europa.nome, "Europa");
+    strcpy(europa.nome, "europa");
     europa.confineAltoSinistro.latitudine = 100;
     europa.confineAltoSinistro.longitudine = 51;
     europa.confineBassoDestro.latitudine = 0;
     europa.confineBassoDestro.longitudine = 100;
     struct Continente africa;
-    strcpy(africa.nome, "Africa");
+    strcpy(africa.nome, "africa");
     africa.confineAltoSinistro.latitudine = 100;
     africa.confineAltoSinistro.longitudine = 101;
     africa.confineBassoDestro.latitudine = 0;
     africa.confineBassoDestro.longitudine = 150;
     struct Continente asia;
-    strcpy(asia.nome, "Asia");
+    strcpy(asia.nome, "asia");
     asia.confineAltoSinistro.latitudine = 100;
     asia.confineAltoSinistro.longitudine = 151;
     asia.confineBassoDestro.latitudine = 0;
     asia.confineBassoDestro.longitudine = 200;
     struct Continente oceania;
-    strcpy(oceania.nome, "Oceania");
+    strcpy(oceania.nome, "oceania");
     oceania.confineAltoSinistro.latitudine = 100;
     oceania.confineAltoSinistro.longitudine = 201;
     oceania.confineBassoDestro.latitudine = 0;
@@ -107,7 +106,7 @@ int main(){
             numCar++;
         }
         scanf("%s", contRisp);
-        if(numCar>7){
+        if(numCar<=7){
             if(Controllo(contRisp, america, daIndovinare))
                 break;
             if(Controllo(contRisp, europa, daIndovinare))
@@ -118,7 +117,7 @@ int main(){
                 break;
             if(Controllo(contRisp, oceania, daIndovinare))
                 break;
-            printf("\nHai sbagliato :( \nRiprova con delle coordinate nuove");
+            printf("\nHai sbagliato \nRiprova con delle coordinate nuove");
         }
         Dormi(1);
     }
