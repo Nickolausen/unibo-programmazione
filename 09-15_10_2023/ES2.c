@@ -12,17 +12,17 @@
 */
 
 typedef struct Statistiche {
-    int nrAlphanumeric = 0;
-    int nrAlpha = 0;
-    int nrControl = 0;
-    int nrDigit = 0;
-    int nrGraph = 0;
-    int nrLower = 0;
-    int nrPrint = 0;
-    int nrPunct = 0;
-    int nrSpace = 0;
-    int nrUpper = 0;
-    int nrXDigit = 0;
+    int nrAlphanumeric;
+    int nrAlpha;
+    int nrControl;
+    int nrDigit;
+    int nrGraph;
+    int nrLower;
+    int nrPrint;
+    int nrPunct;
+    int nrSpace;
+    int nrUpper;
+    int nrXDigit;
 } Statistiche;
 
 int main()
@@ -30,51 +30,45 @@ int main()
     CLEAR_CONSOLE;
     char c;
 
-    Statistiche stats;
-    char * sLower;
-    char * sUpper;
-
-    while ((c = getchar()) != EOF)
+    Statistiche stats = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    printf("Inserisci un testo terminato da #:\n");
+    
+    while ((c = getchar()) != '#')
     {
         if(isalnum(c))
-            stats.nAlphanumeric++;
+            stats.nrAlphanumeric++;
         if(isalpha(c))
-            nAlpha++;
+            stats.nrAlpha++;
         if(iscntrl(c))
-            nControl++;
+            stats.nrControl++;
         if(isdigit(c))
-            nDigit++;
+            stats.nrDigit++;
         if(isgraph(c))
-            nGraph++;
+            stats.nrGraph++;
         if(islower(c))
-            nLower++;
+            stats.nrLower++;
         if(isprint(c))
-            nPrint++;
+            stats.nrPrint++;
         if(ispunct(c))
-            nPunct++;
+            stats.nrPunct++;
         if(isspace(c))
-            nSpace++;
+            stats.nrSpace++;
         if(isupper(c))
-            nUpper++;
+            stats.nrUpper++;
         if(isxdigit(c))
-            nXDigit++;
-        
-        sLower += tolower(c);
-        sUpper += toupper(c);
+            stats.nrXDigit++;
     }
     
-    printf("Numero Caratteri Alfanumerici: %d\n", nAlphanumeric);
-    printf("Numero Caratteri Alfabetici: %d\n", nAlpha);
-    printf("Numero Caratteri di Controllo: %d\n", nControl);
-    printf("Numero di Cifre: %d\n", nDigit);
-    printf("Numero Caratteri Diversi da Spazio: %d\n", nGraph);
-    printf("Numero Caratteri Stampabili: %d\n", nPrint);
-    printf("Numero Caratteri di Punteggiatura: %d\n", nPunct);
-    printf("Numero Caratteri di Spazio: %d\n", nSpace);
-    printf("Numero Caratteri Maiuscoli: %d\n", nUpper);
-    printf("Numero Caratteri Esadecimali: %d\n", nXDigit);
-    printf("Stringa Minuscola: %s\n", sLower);
-    printf("Stringa Maiuscola: %s\n", sUpper);
+    printf("> Numero caratteri alfanumerici: %d\n", stats.nrAlphanumeric);
+    printf("> Numero caratteri alfabetici: %d\n", stats.nrAlpha);
+    printf("> Numero caratteri di controllo: %d\n", stats.nrControl);
+    printf("> Numero di Cifre: %d\n", stats.nrDigit);
+    printf("> Numero caratteri != white_space: %d\n", stats.nrGraph);
+    printf("> Numero caratteri stampabili: %d\n", stats.nrPrint);
+    printf("> Numero caratteri di punteggiatura: %d\n", stats.nrPunct);
+    printf("> Numero caratteri di spazio: %d\n", stats.nrSpace);
+    printf("> Numero caratteri maiuscoli: %d\n", stats.nrUpper);
+    printf("> Numero caratteri esadecimali: %d\n", stats.nrXDigit);
     
 
     return 0;
