@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#define CLEAR_CONSOLE system("clear") == 1 ? system("cls") : system("clear")
+
+#ifdef _WIN32
+#define CLEAR_CONSOLE system("cls")
+#else
+#define CLEAR_CONSOLE system("clear")
+#endif
 
 /*
     Group components:
@@ -46,18 +51,24 @@ int main()
             stats.nrDigit++;
         if(isgraph(c))
             stats.nrGraph++;
-        if(islower(c))
-            stats.nrLower++;
         if(isprint(c))
             stats.nrPrint++;
         if(ispunct(c))
             stats.nrPunct++;
         if(isspace(c))
             stats.nrSpace++;
-        if(isupper(c))
-            stats.nrUpper++;
         if(isxdigit(c))
             stats.nrXDigit++;
+        
+        if(islower(c)) {
+            stats.nrLower++;
+            if (upperChar == '#') upperChar = toupper(c);
+        }
+
+        if(isupper(c)) {
+            stats.nrUpper++;
+            if (lowerChar == '#') lowerChar = tolower(c);
+        }
     }
     
     printf("> Numero caratteri alfanumerici: %d\n", stats.nrAlphanumeric);
@@ -70,6 +81,8 @@ int main()
     printf("> Numero caratteri di spazio: %d\n", stats.nrSpace);
     printf("> Numero caratteri maiuscoli: %d\n", stats.nrUpper);
     printf("> Numero caratteri esadecimali: %d\n", stats.nrXDigit);
-    
+    puts("----");
+    printf("Primo carattere minuscolo trasformato in MAIUSCOLO: %c\n", upperChar);
+    printf("Primo carattere MAIUSCOLO trasformato in minuscolo: %c\n", lowerChar);
     return 0;
 }

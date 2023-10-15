@@ -15,7 +15,11 @@
 	"Clear console": {
 		"prefix": "clearconsole",
 		"body":[
-			"#define CLEAR_CONSOLE system(\"clear\") == 1 ? system(\"cls\") : system(\"clear\")"
+			"#ifdef _WIN32",
+			"#define CLEAR_CONSOLE system(\"cls\")",
+			"#else",
+			"#define CLEAR_CONSOLE system(\"clear\")",
+			"#endif"
 		]
 	}
 }
