@@ -2,15 +2,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <unistd.h>
+#include <ctype.h>
 #include <string.h>
 #include <time.h>
 #include <math.h>
 
 // Per separare nel terminale
 #define LINE_SPLITTER puts("\n-------------")
-//per pulire la console
-#define CLEAR_CONSOLE system("clear") == 1 ? system("cls") : system("clear")
+
+#ifdef _WIN32 // valido sia per 32 che 64 bit
+	#define CLEAR_CONSOLE system("cls");
+#else
+    #define CLEAR_CONSOLE system("clear");
+#endif
+
+#ifdef _WIN32
+    #include <windows.h>
+    #define SLEEP(ms) Sleep(ms * 1000)
+#else
+    #include <unistd.h>
+    #define SLEEP(s) sleep(s)
+#endif
 
 /*
     Group components:
@@ -20,7 +32,7 @@
     > Riccardo Ventrucci <riccardo.ventrucci@studio.unibo.it>;
 */
 
-//creo le struct che mi servono per dopo
+// Creo le struct che mi servono per dopo
 struct Coordinate
 {
     int latitudine;
@@ -34,47 +46,31 @@ struct Continente
     struct Coordinate confineBassoDestro;
 };
 
-//creo i metodi per rendere il codice del main più pulito e meno ripetitivo
-bool ControlloGiusto(struct Continente cont, struct Coordinate coor)
+// Creo i metodi per rendere il codice del main più pulito e meno ripetitivo
+bool isCoordinateInterne(struct Continente cont, struct Coordinate coor)
 {
-    if (cont.confineBassoDestro.latitudine <= coor.latitudine && cont.confineAltoSinistro.latitudine >= coor.latitudine)
-    {
-        if (cont.confineAltoSinistro.longitudine <= coor.longitudine && cont.confineBassoDestro.longitudine >= coor.longitudine)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-bool Controllo(char risp[7], struct Continente cont, struct Coordinate daIndovinare)
-{
-    if (strcmp(risp, cont.nome) == 0)
-    {
-        if (ControlloGiusto(cont, daIndovinare))
-        {
-            printf("Hai indovinato!!!");
-            return true;
-        }
-    }
-    return false;
+    return (cont.confineBassoDestro.latitudine <= coor.latitudine && cont.confineAltoSinistro.latitudine >= coor.latitudine) &&
+        (cont.confineAltoSinistro.longitudine <= coor.longitudine && cont.confineBassoDestro.longitudine >= coor.longitudine);
 }
 
-//per non utilizzare la funzione sleep
-void Dormi(int tempo)
+bool isContinenteCorrispondente(char risp[7], struct Continente cont, struct Coordinate daIndovinare)
 {
-    for (int i = 0; i < tempo * pow(10.0, 7); i++){
-    }
-    CLEAR_CONSOLE;
+    // Se la risposta coincide con il continente preso in analisi, e le coordinate 
+    // del continente mostrate sono contenute nel continente indicato dal giocatore
+    // ritorno True; False altrimenti.
+    char normalizedAnswer[7];
+    for (int i = 0; i < 7; i++)
+        normalizedAnswer[i] = tolower(risp[i]);
+    
+    return (strcmp(normalizedAnswer, cont.nome) == 0) && isCoordinateInterne(cont, daIndovinare);
 }
-
-
 
 int main()
 {
-    // continenti modello ONU quindi 5
-    //dichiaro tutti i continenti con le loro coordinate, ho semplificato rendendoli tutti dei rettangoli
-    //ma anche cambiando le coordinate rimanendo tra 0-100 di latitudine e 0-250 di longitudine senza 
-    //sovrapporre i continenti funziona comunque
+    // Continenti modello ONU quindi 5;
+    // Dichiaro tutti i continenti con le loro coordinate, ho semplificato rendendoli tutti dei rettangoli
+    // ma anche cambiando le coordinate rimanendo tra 0-100 di latitudine e 0-250 di longitudine senza 
+    // sovrapporre i continenti funziona comunque
     struct Continente america;
     strcpy(america.nome, "america");
     america.confineAltoSinistro.latitudine = 100;
@@ -106,53 +102,46 @@ int main()
     oceania.confineBassoDestro.latitudine = 0;
     oceania.confineBassoDestro.longitudine = 250;
 
-    //dichiaro il random per estrarre le coordinate
+    // Dichiaro il random per estrarre le coordinate
     srand(time(0));
-    //dichiaro l'int in cui metterò il timer
-    int start;
-    //dichiaro la variabile delle coordinate da indovinare
+
+    // Dichiaro la variabile delle coordinate da indovinare
     struct Coordinate daIndovinare;
 
-    //finchè non indovina il ciclo và avanti
-    while (true)
+    bool onStreak = true;
+    int score = -1;
+
+    // Il gioco continua finché il giocatore non smette di indovinare
+    while (onStreak)
     {
-        //estraggo le coordinate
+        score++;
+        
+        // estraggo le coordinate
         daIndovinare.latitudine = rand() % 100 + 1;
         daIndovinare.longitudine = rand() % 100 * 2.5 + 1;
 
-        //le faccio vedere temporaneamente
-        printf("\nLa latidine è: %d La longitudine è:%d", daIndovinare.latitudine, daIndovinare.longitudine);
+        // Mostro temporaneamente le coordinate generate
+        printf("\nLATITUDINE: %d\nLONGITUDINE:%d", daIndovinare.latitudine, daIndovinare.longitudine);
 
-        //intanto starto il cronometro
-        start = time(NULL);
+        SLEEP(5);
+        CLEAR_CONSOLE;
 
-        //chiedo di indovinare
-        printf("\nIndovina il continente (quando hai finito di scrivere il continente premi invio): ");
-        //non mettendo qui questa funzione non mi cleara le coordinate e non aspetta un po'
-        //di tempo con il ciclo intutile 
-        Dormi(13);
-        //lo prendo in input
+        // Chiedo di indovinare
+        printf("\nIndovina il continente (premi INVIO per continuare): ");
         char contRisp[7];
         scanf("%s", contRisp);
 
-        //controllo se ha scritto giusto e dove sono le coordinate estratte
-        if (Controllo(contRisp, america, daIndovinare))
-            break;
-        if (Controllo(contRisp, europa, daIndovinare))
-            break;
-        if (Controllo(contRisp, africa, daIndovinare))
-            break;
-        if (Controllo(contRisp, asia, daIndovinare))
-            break;
-        if (Controllo(contRisp, oceania, daIndovinare))
-            break;
-        //se ha sbagliato riprova a indovinare
-        printf("\nHai sbagliato \nRiprova con delle coordinate nuove");
-        Dormi(2);
+        onStreak = isContinenteCorrispondente(contRisp, america, daIndovinare) ||
+            isContinenteCorrispondente(contRisp, europa, daIndovinare) ||
+            isContinenteCorrispondente(contRisp, africa, daIndovinare) ||
+            isContinenteCorrispondente(contRisp, asia, daIndovinare) ||
+            isContinenteCorrispondente(contRisp, oceania, daIndovinare);
+
+        SLEEP(5);
+        CLEAR_CONSOLE;
     }
-    //quando è uscito calcolo il tempo che ci ha messo per la risposta corrente
-    int tempo = time(NULL) - start;
-    //e lo mando in output
-    printf("\nCi hai messo %d secondi\n", tempo);
+
+    printf("\nHai sbagliato \nPunteggio ottenuto: %d", score);
+
     return 0;
 }

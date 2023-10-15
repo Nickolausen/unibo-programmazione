@@ -31,8 +31,9 @@ int main()
     char c;
 
     Statistiche stats = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int length = 0;
+    char upperChar = '#', lowerChar = '#';
     printf("Inserisci un testo terminato da #:\n");
-    
     while ((c = getchar()) != '#')
     {
         if(isalnum(c))
@@ -62,7 +63,7 @@ int main()
     printf("> Numero caratteri alfanumerici: %d\n", stats.nrAlphanumeric);
     printf("> Numero caratteri alfabetici: %d\n", stats.nrAlpha);
     printf("> Numero caratteri di controllo: %d\n", stats.nrControl);
-    printf("> Numero di Cifre: %d\n", stats.nrDigit);
+    printf("> Numero di cifre: %d\n", stats.nrDigit);
     printf("> Numero caratteri != white_space: %d\n", stats.nrGraph);
     printf("> Numero caratteri stampabili: %d\n", stats.nrPrint);
     printf("> Numero caratteri di punteggiatura: %d\n", stats.nrPunct);
@@ -70,6 +71,5 @@ int main()
     printf("> Numero caratteri maiuscoli: %d\n", stats.nrUpper);
     printf("> Numero caratteri esadecimali: %d\n", stats.nrXDigit);
     
-
     return 0;
 }
