@@ -11,7 +11,7 @@
 #define SLEEP(s) sleep(s)
 #define CLEAR_CONSOLE system("clear")
 #endif
-#define LINE_SPLITTER puts("\n----------")
+#define LINE_SPLITTER puts("\n\n----------")
 
 /*
     Group components:
@@ -70,6 +70,13 @@ int *generateVector(int vectLength)
     }
 
     return vector;
+}
+
+void printVector(int size, int* vector) {
+    for (int i = 0; i < size; i++)
+    {
+        printf("%d ", vector[i]);
+    }
 }
 
 int main()
@@ -220,17 +227,122 @@ int main()
 
     LINE_SPLITTER;
 
-    for (int i = 0; i < vect1Length; i++)
-    {
-        printf("%d ", vect1[i]);
+    printf("\nVettore 1: ");
+    printVector(vect1Length, vect1);
+
+    printf("\nVettore 2: ");
+    printVector(vect2Length, vect2);
+
+    int unioneConRipetizioneSize = vect1Length+vect2Length;
+    int* intersezione;
+    int* intersezioneConRipetizione = malloc(0);
+    int* unione;
+    int unioneConRipetizione[unioneConRipetizioneSize];
+
+    for(int i = 0; i < vect1Length; i++) {
+        unioneConRipetizione[i] = vect1[i];
+    }
+    for(int i = 0; i<vect2Length; i++) {
+        unioneConRipetizione[i+vect1Length] = vect2[i];
     }
 
-    printf("\n");
+    int intersezioneConRipetizioneSize = 0;
+    for(int i = 0; i<unioneConRipetizioneSize; i++) {
+        int foundInFirst = 0;
 
-    for (int i = 0; i < vect2Length; i++)
-    {
-        printf("%d ", vect2[i]);
+        for(int j=0;j<vect1Length; j++) {
+            if(unioneConRipetizione[i]==vect1[j])
+            {
+                foundInFirst=1;
+            }
+        }
+
+        if (foundInFirst)
+        {
+            for (int j = 0; j < vect2Length; j++)
+            {
+                if (unioneConRipetizione[i] == vect2[j])
+                {
+                    intersezioneConRipetizioneSize++;
+                    intersezioneConRipetizione = realloc(intersezioneConRipetizione, intersezioneConRipetizioneSize*sizeof(int));
+                    intersezioneConRipetizione[intersezioneConRipetizioneSize-1] = unioneConRipetizione[i];
+                }
+            }
+        }
     }
 
+    int unioneSize = 1;
+    unione = malloc(1*sizeof(int));
+    unione[0] = unioneConRipetizione[0];
+    for(int i = 0; i<unioneConRipetizioneSize; i++) {
+        int found = 0;
+        for(int j=0; j<unioneSize; j++) {
+            if(unione[j]==unioneConRipetizione[i]) {
+                found=1;
+            }
+        }
+        if(found==0) {
+            unioneSize++;
+            unione = realloc(unione, unioneSize*sizeof(int));
+            unione[unioneSize-1] = unioneConRipetizione[i];
+        }
+    }
+
+    int intersezioneSize = 0;
+    intersezione = malloc(0);
+    if(intersezioneConRipetizioneSize>0) {
+        intersezioneSize = 1;
+        intersezione = realloc(intersezione, 1*sizeof(int));
+        intersezione[0] = intersezioneConRipetizione[0];
+        for(int i = 0; i<intersezioneConRipetizioneSize; i++) {
+            int found = 0;
+            for(int j=0; j<intersezioneSize; j++) {
+                if(intersezione[j]==intersezioneConRipetizione[i]) {
+                    found=1;
+                }
+            }
+            if(found==0) {
+                intersezioneSize++;
+                intersezione = realloc(intersezione, intersezioneSize*sizeof(int));
+                intersezione[intersezioneSize-1] = intersezioneConRipetizione[i];
+            }
+        }
+    }
+    
+
+    LINE_SPLITTER;
+
+    printf("\nIntersezione con ripetizione dei valori: ");
+    printVector(intersezioneConRipetizioneSize, intersezioneConRipetizione);
+
+    printf("\nIntersezione senza ripetizione dei valori: ");
+    printVector(intersezioneSize, intersezione);
+
+    printf("\nUnione con ripetizione dei valori: ");
+    printVector(unioneConRipetizioneSize, unioneConRipetizione);
+
+    printf("\nUnione senza ripetizione dei valori: ");
+    printVector(unioneSize, unione);
+
+    LINE_SPLITTER;
+
+    printf("\nIndirizzo di memoria del Vettore 1: %p", vect1);
+    printf("\nSpazio totale occupato dal Vettore 1: %d bytes", vect1Length*sizeof(int));
+
+    printf("\n\nIndirizzo di memoria del Vettore 2: %p", vect2);
+    printf("\nSpazio totale occupato dal Vettore 2: %d bytes", vect2Length*sizeof(int));
+
+    printf("\n\nIndirizzo di memoria del Vettore Intersezione con Ripetizione: %p", intersezioneConRipetizione);
+    printf("\nSpazio totale occupato dal Vettore Intersezione con Ripetizione: %d bytes", intersezioneConRipetizioneSize*sizeof(int));
+
+    printf("\n\nIndirizzo di memoria del Vettore Intersezione: %p", intersezione);
+    printf("\nSpazio totale occupato dal Vettore Intersezione: %d bytes", intersezioneSize*sizeof(int));
+
+    printf("\n\nIndirizzo di memoria del Vettore Unione con Ripetizione: %p", unioneConRipetizione);
+    printf("\nSpazio totale occupato dal Vettore Unione con Ripetizione: %d bytes", unioneConRipetizioneSize*sizeof(int));
+
+    printf("\n\nIndirizzo di memoria del Vettore Unione: %p", unione);
+    printf("\nSpazio totale occupato dal Vettore Unione: %d bytes", unioneSize*sizeof(int));
+    
     return 0;
 }
