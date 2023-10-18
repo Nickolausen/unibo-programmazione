@@ -31,6 +31,8 @@ int hasBeenTruncated(int value, char input[]) {
     char intMinToString[30];
     itoa(INT_MIN, intMinToString, 10);
 
+    /* se il valore corrisponde a INT_MAX verifico se l'input come stringa
+    è uguale a INT_MAX convertito in stringa */
     if(value==INT_MAX) {
         if(strcmp(input, intMaxToString) == 0)
             return 0;
@@ -126,7 +128,10 @@ int main()
         {
             printf("\nInserisci un numero (# per terminare): ");
             fflush(stdin);
+
+            //leggo l'input come stringa così posso ricevere sia interi che il carattere #
             scanf("%s", input);
+            //se l'utente inserisce #, esco dal ciclo
             if (strcmp(input, "#") == 0)
             {
                 exit = 1;
@@ -137,14 +142,18 @@ int main()
                 int convertedVal;
                 char *pointerEnd;
 
+                //converto la stringa in long
                 tmp = strtol(input, &pointerEnd, 10);
 
-
+                //se dopo la corversione pointerEnd corrisponde ad input, la conversione non è avvenuta
                 if (pointerEnd != input)
                 {
+                    //controllo se l'input è stato troncato
                     if (!hasBeenTruncated(tmp, input))
                     {
+                        //converto il long in int perché a questo punto so che incluso nei limiti di int
                         convertedVal = (int)tmp;
+                        //aumento lo spazio di vect1 per farci stare un int in più
                         vect1 = realloc(vect1, (i + 1) * sizeof(int));
                         vect1[i] = convertedVal;
                         i++;
@@ -245,6 +254,7 @@ int main()
     int* unione;
     int unioneConRipetizione[unioneConRipetizioneSize];
 
+    //in unioneConRipetizione metto tutti i valori di entrambi i vettori
     for(int i = 0; i < vect1Length; i++) {
         unioneConRipetizione[i] = vect1[i];
     }
@@ -252,6 +262,9 @@ int main()
         unioneConRipetizione[i+vect1Length] = vect2[i];
     }
 
+
+    /* partendo da unioneConRipetizione cerco ogni valore nei vettori iniziali,
+    se lo trovo in entrambi lo aggiungo a intersezioneConRipetizione*/
     int intersezioneConRipetizioneSize = 0;
     for(int i = 0; i<unioneConRipetizioneSize; i++) {
         int foundInFirst = 0;
@@ -270,6 +283,7 @@ int main()
                 if (unioneConRipetizione[i] == vect2[j])
                 {
                     intersezioneConRipetizioneSize++;
+                    //ingrandisco il vettore per farci stare un int in più
                     intersezioneConRipetizione = realloc(intersezioneConRipetizione, intersezioneConRipetizioneSize*sizeof(int));
                     intersezioneConRipetizione[intersezioneConRipetizioneSize-1] = unioneConRipetizione[i];
                 }
@@ -277,6 +291,9 @@ int main()
         }
     }
 
+
+    /*per gli altri due è sufficiente scorrere il rispettivo vettore con ripetizioni,
+    cercare ogni elemento nel vettore senza ripetizioni e aggiungerlo solo se non è presente*/
     int unioneSize = 1;
     unione = malloc(1*sizeof(int));
     unione[0] = unioneConRipetizione[0];
