@@ -46,50 +46,35 @@ void matrix_fill(char matrix[10][10])
     }
 }
 
-// u = su = 0, d = giù = 1, l = sinistra = 2, d = destra = 3
-char direction()
-{
-    srand(time(NULL));
-    int r = rand() % 4;
-    if(r == 0)
-        return 'u';
-    else if (r == 1)
-        return 'd';
-    else if (r == 2)
-        return 'l';
-    else
-        return 'r';
-}
-
 bool compute_legal_moves(int position[2], char matrix[10][10])
 {
     bool legalMoves = false;
-    int x = position[0];
-    int y = position[1];
+    int x = position[1];
+    int y = position[0];
     int countLegalMoves = 4;
 
     //controllo mosse possibili sull'asse orizzontale
     if(x-1 < 0 )
         countLegalMoves--;
     else
-        if(matrix[x-1][y] != '.')
+        if(matrix[y][x-1] != '.')
             countLegalMoves--;
     if(x+1 > 9)
         countLegalMoves--;
     else
-        if(matrix[x+1][y] != '.')
+        if(matrix[y][x+1] != '.')
             countLegalMoves--;
         
     //controllo mosse possibili sull'asse verticale
     if(y-1 < 0 )
         countLegalMoves--;
     else
-        if(matrix[x][y-1] != '.')
+        if(matrix[y-1][x] != '.')
             countLegalMoves--;
     if(y+1 > 9)
         countLegalMoves--;
     else
-        if(matrix[x][y+1] != '.')
+        if(matrix[y+1][x] != '.')
             countLegalMoves--;
 
     if(countLegalMoves > 0)
@@ -113,52 +98,61 @@ int main()
         bool legalMoves = compute_legal_moves(position, matrix);
         if(legalMoves)
         {
+            int x, y;
+            x = position[1];
+            y = position[0];
             bool legalMove = false;
             do
             {
                 legalMove = false;
-                char dir= direction();
+                char dir;
+                // u = su = 0, d = giù = 1, l = sinistra = 2, r = destra = 3
+                int r = rand() % 4;
+                if(r == 0)
+                    dir = 'u';
+                else if (r == 1)
+                    dir = 'd';
+                else if (r == 2)
+                    dir = 'l';
+                else
+                    dir = 'r';   
+
                 if(dir == 'u')
                 {
-                    if(position[1] - 1 > 0 && matrix[position[0]][position[1] - 1] == '.')
+                    if(y - 1 > 0 && matrix[y-1][x] == '.')
                     {
                         legalMove = true;
-                        position[1]--;
-                        matrix[position[1]][position[0]] = alphabet[alphabetPosition];
-                        last_letter = alphabet[alphabetPosition++];
+                        y = --position[0];
                     }
                 }
                 else if(dir == 'd')
                 {
-                    if(position[1] + 1 > 0 && matrix[position[0]][position[1] + 1] == '.')
+                    if(y + 1 < 9 && matrix[y+1][x] == '.')
                     {
                         legalMove = true;
-                        position[1]++;
-                        matrix[position[1]][position[0]] = alphabet[alphabetPosition];
-                        last_letter = alphabet[alphabetPosition++];
+                        y = ++position[0];
+                        
                     }                      
                 }
                 else if(dir == 'l')
                 {
-                    if(position[0] - 1 > 0 && matrix[position[0] - 1][position[1]] == '.')
+                    if(x - 1 > 0 && matrix[y][x-1] == '.')
                     {
                         legalMove = true;
-                        position[0]--;
-                        matrix[position[1]][position[0]] = alphabet[alphabetPosition];
-                        last_letter = alphabet[alphabetPosition++];
+                        x = --position[1];
                     }                        
                 }
                 else
                 {
-                    if(position[0] + 1 > 0 && matrix[position[0] + 1][position[1]] == '.')
+                    if(x + 1 < 9 && matrix[y][x+1] == '.')
                     {
                         legalMove = true;
-                        position[0]++;
-                        matrix[position[1]][position[0]] = alphabet[alphabetPosition];
-                        last_letter = alphabet[alphabetPosition++];
+                        x = ++position[1];
                     }                     
                 }
             } while (!legalMove);
+            matrix[y][x] = alphabet[alphabetPosition];
+            last_letter = alphabet[alphabetPosition++];
         }
         else
         {
@@ -170,6 +164,6 @@ int main()
 
     printf("\nGioco Finito!");
     matrix_print(matrix);
-    
+
     return 0;
 }
