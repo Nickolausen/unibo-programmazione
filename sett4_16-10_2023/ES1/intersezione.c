@@ -79,6 +79,12 @@ void printVector(int size, int* vector) {
     }
 }
 
+void printVectorAddresses(int size, int* vector) {
+    for(int i = 0; i<size; i++) {
+        printf("%p ", &vector[i]);
+    }
+} 
+
 int main()
 {
 
@@ -326,23 +332,31 @@ int main()
 
     LINE_SPLITTER;
 
-    printf("\nIndirizzo di memoria del Vettore 1: %p", vect1);
+    printf("\nIndirizzi di memoria del Vettore 1: ");
+    printVectorAddresses(vect1Length, vect1);
     printf("\nSpazio totale occupato dal Vettore 1: %d bytes", vect1Length*sizeof(int));
 
-    printf("\n\nIndirizzo di memoria del Vettore 2: %p", vect2);
+    printf("\n\nIndirizzi di memoria del Vettore 2: ");
+    printVectorAddresses(vect2Length, vect2);
     printf("\nSpazio totale occupato dal Vettore 2: %d bytes", vect2Length*sizeof(int));
 
-    printf("\n\nIndirizzo di memoria del Vettore Intersezione con Ripetizione: %p", intersezioneConRipetizione);
+    printf("\n\nIndirizzi di memoria del Vettore Intersezione con Ripetizione: ");
+    printVectorAddresses(intersezioneConRipetizioneSize, intersezioneConRipetizione);
     printf("\nSpazio totale occupato dal Vettore Intersezione con Ripetizione: %d bytes", intersezioneConRipetizioneSize*sizeof(int));
 
-    printf("\n\nIndirizzo di memoria del Vettore Intersezione: %p", intersezione);
+    printf("\n\nIndirizzo di memoria del Vettore Intersezione:");
+    printVectorAddresses(intersezioneSize, intersezione);
     printf("\nSpazio totale occupato dal Vettore Intersezione: %d bytes", intersezioneSize*sizeof(int));
 
-    printf("\n\nIndirizzo di memoria del Vettore Unione con Ripetizione: %p", unioneConRipetizione);
+    printf("\n\nIndirizzo di memoria del Vettore Unione con Ripetizione:");
+    printVectorAddresses(unioneConRipetizioneSize, unioneConRipetizione);
     printf("\nSpazio totale occupato dal Vettore Unione con Ripetizione: %d bytes", unioneConRipetizioneSize*sizeof(int));
 
-    printf("\n\nIndirizzo di memoria del Vettore Unione: %p", unione);
+    printf("\n\nIndirizzo di memoria del Vettore Unione:");
+    printVectorAddresses(unioneSize, unione);
     printf("\nSpazio totale occupato dal Vettore Unione: %d bytes", unioneSize*sizeof(int));
+
+    
     
     return 0;
 }
