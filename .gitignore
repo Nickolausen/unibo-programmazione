@@ -40,6 +40,10 @@
 *.su
 *.idb
 *.pdb
+*.exe
+
+# Mac files
+*.DS_Store
 
 # Kernel Module Compile Results
 *.mod*
@@ -50,5 +54,5 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# Code Settings' folder
 .vscode
-*.exe
