@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h> 
+#include <string.h>
+
 #ifdef _WIN32
 #include <windows.h>
 #define SLEEP(ms) Sleep(ms * 1000)
@@ -94,6 +96,9 @@ int main()
     int position[2] = {0,0};
     matrix_fill(matrix);
     matrix[0][0] = last_letter;
+
+    char message[100] = "Gioco finito!";
+
     do
     {
         bool legalMoves = compute_legal_moves(position, matrix);
@@ -157,13 +162,12 @@ int main()
         }
         else
         {
-            printf("\nNessuna mossa disponibile, gioco finito.");
-            matrix_print(matrix);
+            strcpy(message, "Nessuna mossa disponibile! Gioco terminato.");
             game = false;
-        }
+        }4
     } while (game && last_letter != 'Z');
 
-    printf("\nGioco Finito!");
+    printf("%s", message);
     matrix_print(matrix);
 
     return 0;
