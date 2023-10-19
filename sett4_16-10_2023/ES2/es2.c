@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <time.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h> 
 #ifdef _WIN32
