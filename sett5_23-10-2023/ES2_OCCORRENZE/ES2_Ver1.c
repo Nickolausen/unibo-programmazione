@@ -5,6 +5,8 @@
 // Definisco un funzione per trovare la lunghezza di un array
 #define LENGHT(a) (int)(sizeof(a) / sizeof(a[0]))
 
+
+
 /*
     Group components:
     > Nicholas Magi <nicholas.magi@studio.unibo.it>;
@@ -53,6 +55,7 @@ int main()
         // Mi segno la lunghezza così da utilizzarla per operazioni successive
         lunghezzaOccorrenza++;
     }
+    
 
     // Utilizzo un booleano per sapere se effetivamente dentro la stringa di input iniziale
     // c'è un'occorrenza 
