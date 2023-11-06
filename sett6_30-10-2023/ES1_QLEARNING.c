@@ -182,6 +182,11 @@ bool is_within_boundaries(Coordinates *position, int nrRows, int nrCols)
         (position->col >= 0 && position->col < nrCols);
 }
 
+int to_state(Coordinates *position, int max_cols)
+{
+    return position->row * max_cols + position->col;
+}
+
 int main()
 {
     CLEAR_CONSOLE;
@@ -203,7 +208,7 @@ int main()
         +100 // END SCORE
     };
 
-    Coordinates initial_position = { 0, 0 };
+    Coordinates initial_position = { 0 /*row*/, 0 /*col*/};
     Coordinates current_position;
     Coordinates next_position;
 
@@ -240,7 +245,7 @@ int main()
         SLEEP(1);
 
         printf("%d",trainingCount);
-        countTrainingStep++;
+
         int probability = (rand() % 100) + 1;
 
         if ( probability <= (100 - eps) )
