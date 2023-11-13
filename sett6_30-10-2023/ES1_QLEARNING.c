@@ -62,15 +62,19 @@ typedef enum eStateTypes
     NRSTATES
 } eStateTypes;
 
-typedef struct MazeInfo 
+typedef struct MazeComposition 
 {
     int nrBombs;
     int nrCharges;
+} MazeComposition;
+
+typedef struct MazeScores 
+{
     int bombMalus;
     int chargeBonus;
     int emptyTilePoints;
     int endScore;
-} MazeInfo;
+} MazeScores;
 
 typedef struct Coordinates 
 {
@@ -100,7 +104,7 @@ void print_qtable(float qtable[Q_LENGTH][NRACTIONS], int state)
     printf("%-10s%.5f\n", rowHeaders[RIGHT], qtable[state][RIGHT]);
 }
 
-void init_maze(int nrRows, int nrCols, int maze[nrRows][nrCols], MazeInfo *info) 
+void init_maze(int nrRows, int nrCols, int maze[nrRows][nrCols], MazeComposition *info) 
 {
     srand(time(NULL));
     
@@ -187,42 +191,21 @@ int to_state(Coordinates *position, int max_cols)
     return position->row * max_cols + position->col;
 }
 
-int main()
+void train_agent(int maze[NRROWS][NRCOLS], 
+    MazeScores* scores,
+    Coordinates* initial_position, 
+    float q_table[Q_LENGTH][NRACTIONS],
+    const int MAX_TRAINING) 
 {
-    CLEAR_CONSOLE;
-    srand(time(NULL));
-
-    float q_table[Q_LENGTH][NRACTIONS];
-    set_qtable(q_table, 0);
-
-    int countTrainingStep = 0, countTrainingExperiment = 0;
-
-    int maze[NRROWS][NRCOLS];
-    MazeInfo mazeStats = 
-    {
-        7, // NR° BOMBS
-        6, // NR° CHARGES
-        -100, // BOMB MALUS
-        +1, // CHARGE BONUS
-        -1, // EMPTY TILE MALUS
-        +100 // END SCORE
-    };
-
-    Coordinates initial_position = { 0 /*row*/, 0 /*col*/};
     Coordinates current_position;
     Coordinates next_position;
 
-    init_maze(NRROWS, NRCOLS, maze, &mazeStats);
-    print_maze(NRROWS, NRCOLS, maze, &initial_position);
-
     int moves[NRACTIONS][2] = {
-        {-1, 0 }, // UP
-        { 0, 1 }, // RIGHT
-        { 1, 0 }, // DOWN
-        { 0, -1 } // LEFT
+    {-1, 0 }, // UP
+    { 0, 1 }, // RIGHT
+    { 1, 0 }, // DOWN
+    { 0, -1 } // LEFT
     };
-
-    int trainingCount = 0; 
 
     /* 
         The value of epsilon will decrease as the training goes on.
@@ -231,20 +214,19 @@ int main()
     */
     float eps = 100;
 
-    float maxReward = -FLT_MAX;
-    eAction action;
-
-    int current_state = 0;
-    current_position.row = initial_position.row;
-    current_position.col = initial_position.col;
-    bool first;
-
-    while (trainingCount < MAX_TRAINING_EXPERIMENT) // Robot's training
+    int trainingCount = 0;
+    while (trainingCount < MAX_TRAINING) // Robot's training
     {
         CLEAR_CONSOLE;
         SLEEP(1);
+       
+        float maxReward = -FLT_MAX;
+        eAction action;
 
-        printf("%d",trainingCount);
+        int current_state = 0;
+        current_position.row = initial_position->row;
+        current_position.col = initial_position->col;
+        bool first;
 
         int probability = (rand() % 100) + 1;
 
@@ -308,19 +290,19 @@ int main()
         switch (maze[current_position.row][current_position.col]) 
         {
             case BOMB:
-                reward = mazeStats.bombMalus;
+                reward = scores->bombMalus;
             break;
 
             case EMPTY:
-                reward = mazeStats.emptyTilePoints;
+                reward = scores->emptyTilePoints;
             break;
 
             case CHARGE:
-                reward = mazeStats.chargeBonus;
+                reward = scores->chargeBonus;
             break;
 
             case END:
-                reward = mazeStats.endScore;
+                reward = scores->endScore;
             break;
         }
 
@@ -329,7 +311,7 @@ int main()
             nearby tiles.
         */
         // Finding new state
-        int new_state = current_position.row * NRCOLS + current_position.col;
+        int new_state = to_state(&current_position, NRCOLS);
 
         float maxFutureReward = -FLT_MAX;
         first = true;
@@ -349,17 +331,15 @@ int main()
 
         // Applying formula to update Q-Table values for current_state
         q_table[current_state][action] = q_table[current_state][action] + LEARNING_RATE * (reward + (DISCOUNT_RATE * maxFutureReward) - q_table[current_state][action]);
-        print_qtable(q_table, current_state);
+        print_qtable(&(*q_table), current_state);
 
         if (maze[current_position.row][current_position.col] == BOMB || 
-            maze[current_position.row][current_position.col] == END ||
-            (MAX_TRAINING_STEP > 0 && countTrainingExperiment > MAX_TRAINING_STEP))
+            maze[current_position.row][current_position.col] == END)
         {
-            countTrainingStep = 0;
-            current_state = initial_position.row * NRCOLS + initial_position.col;
-            current_position.row = initial_position.row;
-            current_position.col = initial_position.col;
-            countTrainingExperiment++;
+            current_state = initial_position->row * NRCOLS + initial_position->col;
+            current_position.row = initial_position->row;
+            current_position.col = initial_position->col;
+            trainingCount++;
             eps -= 100.0f / MAX_TRAINING_EXPERIMENT;
         }
         else
@@ -369,5 +349,35 @@ int main()
 
         print_maze(NRROWS, NRCOLS, maze, &current_position);
     }
+}
+
+int main()
+{
+    CLEAR_CONSOLE;
+    srand(time(NULL));
+
+    float q_table[Q_LENGTH][NRACTIONS];
+    set_qtable(q_table, 0);
+
+    int maze[NRROWS][NRCOLS];
+    MazeComposition mazeComposition = 
+    {
+        7, // NR° BOMBS
+        6, // NR° CHARGES
+    };
+
+    MazeScores scores = { 
+        -100, // Bomb malus
+        +10, // Charge bonus
+        -1, // Empty tile malus
+        100 // End score
+    };
+    Coordinates initial_position = {0 /*row*/, 0 /*col*/};
+
+    init_maze(NRROWS, NRCOLS, maze, &mazeComposition);
+    print_maze(NRROWS, NRCOLS, maze, &initial_position);
+
+    train_agent(maze, &scores, &initial_position, q_table, 1000);
+    
     return 0;
 }
