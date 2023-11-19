@@ -40,7 +40,7 @@
     - If set to 0, the agent learns nothing from its moves;
     - If set to 1, the agent values only most recent information;
 */
-#define LEARNING_RATE .5f
+#define LEARNING_RATE .1f
 
 /*
     Value between 0 <= x <= 1;
@@ -77,12 +77,6 @@ typedef enum eStateTypes
     NRSTATES // Little workaround in order to have the number of elements inside enum
 } eStateType;
 
-typedef struct MazeComposition 
-{
-    int nrBombs;
-    int nrCharges;
-} MazeComposition;
-
 typedef struct MazeScores 
 {
     int bombMalus;
@@ -96,6 +90,22 @@ typedef struct Coordinates
     int row;
     int col;
 } Coordinates;
+
+typedef struct MazeComposition 
+{
+    int nrBombs;
+    int nrCharges;
+    Coordinates start_point;
+    Coordinates end_point;
+} MazeComposition;
+
+static int moves[NRACTIONS][2] =  
+{
+    {-1,0}, // UP
+    {0,1}, // RIGHT
+    {1,0}, // DOWN
+    {0,-1} // LEFT
+};
 
 void set_qtable(float qtable[Q_LENGTH][NRACTIONS], float value) 
 {
@@ -143,7 +153,8 @@ void print_qtable_state(float qtable[Q_LENGTH][NRACTIONS], int state)
     printf("%-10s%.5f\n", rowHeaders[RIGHT], qtable[state][RIGHT]);
 }
 
-void init_maze(int nrRows, int nrCols, int maze[nrRows][nrCols], MazeComposition *info) 
+void init_maze(int nrRows, int nrCols, int maze[nrRows][nrCols], 
+    MazeComposition* info) 
 {
     srand(time(NULL));
     
@@ -179,8 +190,8 @@ void init_maze(int nrRows, int nrCols, int maze[nrRows][nrCols], MazeComposition
         maze[rndRow][rndCol] = CHARGE;
     }
 
-    maze[0][0] = START;
-    maze[nrRows - 1][nrCols - 1] = END;
+    maze[info->start_point.row][info->start_point.col] = START;
+    maze[info->end_point.row][info->end_point.col] = END;
 }
 
 void print_maze(int nrRows, int nrCols, int maze[nrRows][nrCols], Coordinates *robot_position)
@@ -211,9 +222,9 @@ void print_maze(int nrRows, int nrCols, int maze[nrRows][nrCols], Coordinates *r
 
             if (robot_position->row == row && 
                 robot_position->col == col)
-                fprintf(stdout, FSBOLD"%c "FSRESET, 'X'); // Print X for ROBOT
+                printf("%s%s%c%s%s ", consoleColor, FSBOLD, 'X', FSRESET, CRESET); // Print X for ROBOT
             else
-                fprintf(stdout, "%s%d%s ", consoleColor, maze[row][col], CRESET); // Print the maze content
+                printf("%s%d%s ", consoleColor, maze[row][col], CRESET); // Print the maze content
         }
 
         puts("");
@@ -231,13 +242,67 @@ int to_state(Coordinates *position, int max_cols)
     return position->row * max_cols + position->col;
 }
 
+bool game_over(eStateType cell) 
+{
+    return cell == BOMB || cell == END;
+}
+
+// Returns the celltype that triggered the gameover (it could be the endpoint or a bomb)
+eStateType play_game(int maze[NRROWS][NRCOLS], 
+    float qtable[Q_LENGTH][NRACTIONS], 
+    Coordinates* initial_position) 
+{
+    // Main steps:
+    // (1) LOOK Q-TABLE VALUES FROM CURRENT POSITION;
+    // (2) MOVE ACCORDING TO BEST VALUE FOUND;
+    // (3) CHECK ON WHAT KIND OF CELL THE ROBOT IS STANDING OVER;
+
+    Coordinates current_position = { initial_position->row, initial_position->col };
+    eStateType current_cell = maze[current_position.row][current_position.col];
+    
+    while ( !game_over(current_cell) ) // (3)
+    {
+        CLEAR_CONSOLE;
+        print_maze(NRROWS, NRCOLS, maze, &current_position);
+        SLEEP(1);
+
+        Coordinates next_position;
+        eAction action;
+
+        // (1)
+        float reward = -FLT_MAX;
+        for (int idxAction = 0; idxAction < NRACTIONS; idxAction++) 
+        {
+            next_position.row = current_position.row + moves[idxAction][0];
+            next_position.col = current_position.col + moves[idxAction][1];
+            int next_state = to_state(&next_position, NRCOLS);
+            
+            if (qtable[next_state][idxAction] >= reward) 
+            {
+                reward = qtable[next_state][idxAction];
+                action = idxAction;
+            }
+        }
+
+        // (2)
+        current_position.row += moves[action][0];
+        current_position.col += moves[action][1];
+
+        current_cell = maze[current_position.row][current_position.col];
+    }
+
+
+    return current_cell;
+}
+
 void train_agent(int maze[NRROWS][NRCOLS], 
     MazeScores* scores,
     Coordinates* initial_position, 
     float q_table[Q_LENGTH][NRACTIONS],
-    const int MAX_TRAINING) 
+    const int MAX_TRAINING,
+    bool displayTrainingSteps) 
 {
-    Coordinates current_position = *initial_position;
+    Coordinates current_position = { initial_position->row, initial_position->col };
     int initial_state = to_state(initial_position, NRCOLS);
     float eps = 100;
     int moves[NRACTIONS][2] =  
@@ -248,11 +313,18 @@ void train_agent(int maze[NRROWS][NRCOLS],
         {0,-1} // LEFT
     };
     
-    printf("const char *const Format, ...");
-    int trainingStep = 0;
+    int trainingStep = 0, nrIterations = 0;
     while (trainingStep < MAX_TRAINING) 
     {
+        nrIterations++;
         CLEAR_CONSOLE;
+        printf("# Iteration [%d]\n\n", nrIterations);
+
+        printf("Starting at [%d][%d], STATE: %d\n", 
+            current_position.row, 
+            current_position.col, 
+            to_state(&current_position, NRCOLS));
+        
         int rndDecision = rand() % 100 + 1;
         eAction action;
         Coordinates next_position;
@@ -265,59 +337,56 @@ void train_agent(int maze[NRROWS][NRCOLS],
         if (rndDecision <= (100 - eps)) 
         {
             // Perform an action EXPLOITING Q-table values
-
+            printf("-- Performing an action EXPLOITING Q-Table\n");
             Coordinates possible_next_position;
-            float maxReward = -FLT_MIN;
+            float maxQReward = -FLT_MIN;
 
+            int possible_next_state;
             for (int idxAction = 0; idxAction < NRACTIONS; idxAction++) 
             {
                 possible_next_position.row = current_position.row + moves[idxAction][0];
                 possible_next_position.col = current_position.col + moves[idxAction][1];
-                int possible_next_state = to_state(&possible_next_position, NRCOLS);
+                possible_next_state = to_state(&possible_next_position, NRCOLS);
 
                 if (is_within_boundaries(&possible_next_position, NRROWS,NRCOLS) &&
-                    q_table[possible_next_state][idxAction] >= maxReward) 
+                    q_table[possible_next_state][idxAction] >= maxQReward) 
                 {
-                    maxReward = q_table[to_state(&possible_next_position, NRCOLS)][idxAction];
+                    maxQReward = q_table[possible_next_state][idxAction];
                     action = idxAction;
-                    next_position.row = possible_next_position.row;
-                    next_position.col = possible_next_position.col;
                 }
             }
+
+            printf("Best reward found: %.4f\n", maxQReward);
+            printf("Found at State: %d | Action: %d\n", possible_next_state, action);
+            fflush(stdout);
         }
         else 
         {
             // Perform an action EXPLORING the environment
-
-            // /* For 
-            //     [0]=UP, 
-            //     [1]=RIGHT, 
-            //     [2]=DOWN, 
-            //     [3]=LEFT 
-            // */
-            // bool actionCheck[] = { false, false, false, false };
+            printf("-- Performing an action EXPLORING the environment\n");
             
-            Coordinates possible_next_position; 
+            Coordinates possible_next_position;
             do 
             {
                 action = rand() % NRACTIONS; 
 
                 possible_next_position.row = current_position.row + moves[action][0];
-                possible_next_position.col = possible_next_position.col + moves[action][1];
+                possible_next_position.col = current_position.col + moves[action][1];
 
-            } while (is_within_boundaries(&possible_next_position, NRROWS, NRCOLS));
-
-            next_position.row = possible_next_position.row;
-            next_position.col = possible_next_position.col;
+            } while (!is_within_boundaries(&possible_next_position, NRROWS, NRCOLS));
         }
+
+        printf("Next position calculated: \n\t- ROW: %d\n\t- COL: %d\n\n", 
+            current_position.row + moves[action][0], 
+            current_position.col + moves[action][1]);
 
         // As we computed the next position (coming from either exploration of the maze or exploitation of the Q-Table)
         // we update the agent's current position on the maze, and we find out on what kind of tile he's standing over
 
-        int reward = -1;
-        current_position.row = next_position.row;
-        current_position.col = next_position.col;
+        current_position.row += moves[action][0];
+        current_position.col += moves[action][1];
 
+        int reward;
         switch (maze[current_position.row][current_position.col])
         {
             case EMPTY:
@@ -341,7 +410,7 @@ void train_agent(int maze[NRROWS][NRCOLS],
 
         // In order to use the formula, we need to estimate the max
         // future reward from the Q-Table
-        float maxFutureReward = -FLT_MIN;
+        float maxFutureQReward = -FLT_MIN;
         for (int idxAction = 0; idxAction < NRACTIONS; idxAction++)
         {
             next_position.row = current_position.row + moves[idxAction][0];
@@ -349,17 +418,17 @@ void train_agent(int maze[NRROWS][NRCOLS],
             int futureState = to_state(&next_position, NRCOLS);
             
             if (is_within_boundaries(&next_position, NRROWS, NRCOLS) &&
-                q_table[futureState][idxAction] >= maxFutureReward) 
+                q_table[futureState][idxAction] >= maxFutureQReward) 
             {
-                maxFutureReward = q_table[futureState][idxAction];
+                maxFutureQReward = q_table[futureState][idxAction];
             }
         }
 
-        // Updating Q-Table value
+        // Updating Q-Table value with Bellman's equation
         q_table[current_state][action] = q_table[current_state][action] + LEARNING_RATE * 
-            (reward + DISCOUNT_RATE * maxFutureReward - q_table[current_state][action]);
+            (reward + DISCOUNT_RATE * maxFutureQReward - q_table[current_state][action]);
 
-        if (maze[current_state][action] == BOMB || maze[current_state][action] == END) 
+        if (game_over(maze[current_position.row][current_position.col])) 
         {
             eps -= 100.0f / MAX_TRAINING;
             trainingStep++;
@@ -367,10 +436,14 @@ void train_agent(int maze[NRROWS][NRCOLS],
             current_state = initial_state;
         }
         
-        printf("# Training step %d/%d\n", trainingStep, MAX_TRAINING);
-        print_maze(NRROWS, NRCOLS, maze, &current_position);
-        print_qtable_state(q_table, current_state);
-        SLEEP(1);
+        if (displayTrainingSteps) 
+        {
+            printf("# Training step %d/%d\n", trainingStep, MAX_TRAINING);
+            print_maze(NRROWS, NRCOLS, maze, &current_position);
+            puts("");
+            print_qtable_state(q_table, current_state);
+            SLEEP(1);
+        }
     }
 }
 
@@ -386,6 +459,8 @@ int main()
     {
         7, // NR° BOMBS
         6, // NR° CHARGES
+        {8,8}, // START POINT
+        {4, 7} // END POINT
     };
 
     MazeScores scores = { 
@@ -394,20 +469,67 @@ int main()
         -1, // Empty tile malus
         100 // End score
     };
-    Coordinates initial_position = {0 /*row*/, 0 /*col*/};
 
+    Coordinates initial_position = {
+        mazeComposition.start_point.row /*row*/, 
+        mazeComposition.start_point.col /*col*/};
+
+    CLEAR_CONSOLE;
+    printf(CBLU"=== Q-Learning Algorithm in C ===\n");
+    printf("Program written by:\n");
+    printf("> Nicholas Magi\n");
+    printf("> Riccardo Ventrucci\n");
+    printf("> Tommaso Maestri\n");
+    printf("> Leonardo Perretta\n\n"CRESET);
+    
     bool keepMaze;
     do {
-        CLEAR_CONSOLE;
         init_maze(NRROWS, NRCOLS, maze, &mazeComposition);
+        printf("=== Generated maze:\n");
         print_maze(NRROWS, NRCOLS, maze, &initial_position);
 
-        printf("Do you want to keep this maze? [Y/n]");
+        printf("\n- Do you want to keep this maze? [Y/n]: ");
+        fflush(stdin);
         keepMaze = toupper(getchar()) == 'Y';
+
+        if (!keepMaze) 
+        {
+            fflush(stdout);
+            CLEAR_CONSOLE;
+        }
+        
     } while(!keepMaze);
 
-    printf("const char *const Format, ...");
-    train_agent(maze, &scores, &initial_position, q_table, 1000);
+    puts("");
+    printf("- Do you want the training process to be shown in console? [Y/n]: ");
+    fflush(stdin);
+    bool showTraining = toupper(getchar()) == 'Y';
+
+    bool keepTraining;
+    do 
+    {
+        time_t start_timer = clock();
+        train_agent(maze, &scores, &initial_position, q_table, 1000, showTraining);
+        time_t end_timer = clock();
+
+        time_t elapsedSeconds = (end_timer - start_timer) / CLOCKS_PER_SEC;
+        printf("Training finished. Elapsed time: %d,%d\n", elapsedSeconds, (elapsedSeconds*1000)%1000);
+        
+        printf("\n- Do you want to start another training session? [Y/n]");
+        fflush(stdin);
+        keepTraining = toupper(getchar()) == 'Y';
+
+    } while (keepTraining);
     
+    CLEAR_CONSOLE;
+
+    eStateType gameoverTrigger = play_game(maze, q_table, &initial_position);
+
+    if (gameoverTrigger == BOMB)
+        printf("%sGAME OVER - A bomb exploded! %s", CRED, CRESET);
+    else
+        printf("%sYou won!%s", CGRN, CRESET);
+   
+   
     return 0;
 }
