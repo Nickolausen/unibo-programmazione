@@ -303,12 +303,14 @@ eStateType play_game(int maze[NRROWS][NRCOLS],
     return current_cell;
 }
 
-void train_agent(int maze[NRROWS][NRCOLS], 
+time_t train_agent(int maze[NRROWS][NRCOLS], 
     MazeScores* scores,
     Coordinates* initial_position, 
     float q_table[Q_LENGTH][NRACTIONS],
     const int MAX_TRAINING) 
 {
+    time_t start_time = clock();
+
     Coordinates current_position = { initial_position->row, initial_position->col };
     int initial_state = to_state(initial_position, NRCOLS);
     float eps = 100;
@@ -447,6 +449,11 @@ void train_agent(int maze[NRROWS][NRCOLS],
             current_state = initial_state;
         }
     }
+
+    time_t end_time = clock();
+
+    time_t elapsedTime = end_time - start_time;
+    return elapsedTime;
 }
 
 int main()
@@ -523,11 +530,7 @@ int main()
     bool keepTraining;
     do 
     {
-        time_t start_timer = clock();
-        train_agent(maze, &scores, &initial_position, q_table, nrTrainingSteps);
-        time_t end_timer = clock();
-
-        time_t elapsedSeconds = (end_timer - start_timer) / CLOCKS_PER_SEC;
+        time_t elapsedSeconds = train_agent(maze, &scores, &initial_position, q_table, nrTrainingSteps) / CLOCKS_PER_SEC;
         printf("Training finished. Elapsed time: %lds\n", elapsedSeconds);
         
         printf("\n- Do you want to start another training session? [Y/n]: ");
