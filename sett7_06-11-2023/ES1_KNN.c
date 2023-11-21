@@ -10,6 +10,10 @@
 
 // region struct
 #pragma region
+
+// Creo la struct per poter inizializzare un valore standard da confrontare con
+// gli elementi del file e poter memorizzare quelli che in quel momento sono più
+// vicini allo standard
 typedef struct Loan
 {
     char *credit_policy;
@@ -28,6 +32,8 @@ typedef struct Loan
     char *not_fully_paid;
 } Loan;
 
+// Creo questa struct per tenermi traccia dei punti dei Loan se calcolo che 
+// sono uno dei più vicini al mio valore standard
 typedef struct Pair
 {
     Loan oggetto;
@@ -35,6 +41,9 @@ typedef struct Pair
 } Pair;
 #pragma endregion
 
+// Metodo per controllare se il valore che sto controllando quanto è simile al mio
+// valore standard è uno dei più vicini, in quel caso ritorno la posizione in cui
+// và immagazzinato, altrimenti -1
 int IsOneOfTheNearest(Pair near[], int puntiTemp, int k)
 {
     int min = 99999;
@@ -76,31 +85,39 @@ int main()
     standard.not_fully_paid = "0";
 #pragma endregion
 
+    // Prendo in input quanti valori vicini vuole l'utente
     printf("\nQuanti vicini (k) vuoi visualizzare del valore di default? ");
     scanf("%d", &k);
+
+    // Inizializzo tutti i valori di nearest a -1 cosìcche sicuramente ci saranno k 
+    // elementi nell'array
     Pair nearest[k];
     for (int i = 0; i < k; i++)
     {
-        nearest[i].puntiSimilarita = 0;
+        nearest[i].puntiSimilarita = -1;
     }
-
+    
+    //Apro il file con un percorso non relativo, quindi da cambiare con il file messo nello zip
     FILE *file;
-    char filename[] = "/Users/riccardo/Desktop/programmi/prove/loan_data.csv"; // Inserisci il nome del TUO file CSV
+    char filename[] = "/Users/riccardo/Documents/GitHub/elaborati-programmazione/sett7_06-11-2023/DS-Credit/loan_data.csv"; // Inserisci il nome del TUO file CSV
 
+    // Apro il file
     file = fopen(filename, "r");
-
+    
+    // Se il file è stato aperto male interrompo l'esecuzione e mando un "messaggio d'errore"
     if (file == NULL)
     {
         printf("Impossibile aprire il file %s\n", filename);
         return 1;
     }
 
+    // Dichiaro le variabili che mi serviranno durante l'esecuzione principale
     char line[MAX_ROW][MAX_LEN];
     long long col = 0;
     double puntiSimilarita;
     double val = 0;
 
-    // Leggi il file CSV riga per riga
+    // Leggo il file CSV riga per riga
     while (fgets(line[col], MAX_LEN, file))
     {
         char *token;
@@ -109,12 +126,15 @@ int main()
         int i = 0;
         Loan temp;
 
-        // Analizza la riga del file CSV in colonne separate
+        // Analizz0 la riga del file CSV in colonne separate
         while (token != NULL)
         {
 
-// region switch
-#pragma region
+            // region switch
+            #pragma region
+
+            // Attraverso uno switch controllo in che colonna solo cosicchè da potermi regolare
+            // con i controlli per la similarità
             switch (i)
             {
             case 0:
@@ -195,36 +215,47 @@ int main()
             }
 #pragma endregion
 
+            // Avanzo di colonna
             token = strtok(NULL, ",");
+
+            // Cambio la colonna su cui devo controllare la similarità
             i++;
         }
+
+        // Cerco se l'oggetto in runtime è uno dei più simili al valore standard 
+        // al momento e prendo la posizione in cui devo metterlo
         int pos = IsOneOfTheNearest(nearest, puntiSimilarita, k);
         if (pos != -1)
         {
+            // Aggiorno quella posizione
             nearest[pos].oggetto = temp;
             nearest[pos].puntiSimilarita = puntiSimilarita;
         }
+        // Avanzo di riga
         col++;
     }
 
     printf("\n Oggetti più vicini trovati: \n");
     for (int i = 0; i < k; i++)
     {
-        printf("%s ", nearest[i].oggetto.credit_policy);
-        printf("%s ", nearest[i].oggetto.purpose);
-        printf("%s ", nearest[i].oggetto.int_rate);
-        printf("%s ", nearest[i].oggetto.installments);
-        printf("%s ", nearest[i].oggetto.log_annual_inc);
-        printf("%s ", nearest[i].oggetto.dti);
-        printf("%s ", nearest[i].oggetto.fico);
-        printf("%s ", nearest[i].oggetto.days_with_cr_line);
-        printf("%s ", nearest[i].oggetto.revol_bal);
-        printf("%s ", nearest[i].oggetto.revol_util);
-        printf("%s ", nearest[i].oggetto.inq_last_6mths);
-        printf("%s ", nearest[i].oggetto.delinq_2yrs);
-        printf("%s ", nearest[i].oggetto.pub_rec);
-        printf("%s ", nearest[i].oggetto.not_fully_paid);
-        printf("Con punti di similarità: %d \n", nearest[i].puntiSimilarita);
+        printf("Oggetto [%d] - punti di similarità: %d\n", i, nearest[i].puntiSimilarita);
+        puts("{");
+        printf("\t%s: %s\n",  "credit_policy", nearest[i].oggetto.credit_policy);
+        printf("\t%s: %s\n ", "purpose", nearest[i].oggetto.purpose);
+        printf("\t%s: %s\n ", "int_rate", nearest[i].oggetto.int_rate);
+        printf("\t%s: %s\n ", "installments", nearest[i].oggetto.installments);
+        printf("\t%s: %s\n ", "long_annual_inc", nearest[i].oggetto.log_annual_inc);
+        printf("\t%s: %s\n ", "dti", nearest[i].oggetto.dti);
+        printf("\t%s: %s\n ", "fico", nearest[i].oggetto.fico);
+        printf("\t%s: %s\n ", "days_with_cr_line", nearest[i].oggetto.days_with_cr_line);
+        printf("\t%s: %s\n ", "revol_bal", nearest[i].oggetto.revol_bal);
+        printf("\t%s: %s\n ", "revol_util", nearest[i].oggetto.revol_util);
+        printf("\t%s: %s\n ", "inq_last_6mths", nearest[i].oggetto.inq_last_6mths);
+        printf("\t%s: %s\n ", "delinq_2yrs", nearest[i].oggetto.delinq_2yrs);
+        printf("\t%s: %s\n ", "pub_rec", nearest[i].oggetto.pub_rec);
+        printf("\t%s: %s\n ", "not_fully_paid", nearest[i].oggetto.not_fully_paid);
+        puts("}");
+        puts("");
     }
 
     // Chiudi il file

@@ -36,7 +36,7 @@ int main()
     int lunghezzaInputIniziale = 0;
     char lettura = ' ';
     printf("Scrivi la prima stringa: ");
-    while ((lettura = getchar()) != '\n' && lunghezzaInputIniziale < LENGHT(inputIniziale))
+    while ((lettura = getchar()) != '\n' && lunghezzaInputIniziale < LENGTH(inputIniziale))
     {
         inputIniziale[lunghezzaInputIniziale] = lettura;
 
@@ -49,7 +49,7 @@ int main()
     int lunghezzaOccorrenza = 0;
     lettura = ' ';
     printf("Scrivi la seconda stringa che deve essere contenuta nella prima: ");
-    while ((lettura = getchar()) != '\n' && lunghezzaOccorrenza < LENGHT(occorrenza))
+    while ((lettura = getchar()) != '\n' && lunghezzaOccorrenza < LENGTH(occorrenza))
     {
         occorrenza[lunghezzaOccorrenza] = lettura;
         // Mi segno la lunghezza così da utilizzarla per operazioni successive
