@@ -243,7 +243,7 @@ bool game_over(eStateType cell)
     return cell == BOMB || cell == END;
 }
 
-// Returns the celltype that triggered tmarohe gameover (it could be the endpoint or a bomb)
+// Returns the celltype that triggered gameover (it could be the endpoint or a bomb)
 eStateType play_game(int maze[NRROWS][NRCOLS], 
     float qtable[Q_LENGTH][NRACTIONS], 
     Coordinates* initial_position) 
@@ -303,6 +303,7 @@ eStateType play_game(int maze[NRROWS][NRCOLS],
     return current_cell;
 }
 
+// Return the elapsed ticks from the beginning of the training
 time_t train_agent(int maze[NRROWS][NRCOLS], 
     MazeScores* scores,
     Coordinates* initial_position, 
@@ -468,8 +469,8 @@ int main()
     {
         7, // NR° BOMBS
         6, // NR° CHARGES
-        {1,1}, // START POINT
-        {7, 6} // END POINT
+        {0,0}, // START POINT
+        {9, 9} // END POINT
     };
 
     MazeScores scores = { 

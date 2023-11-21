@@ -63,6 +63,28 @@ int IsOneOfTheNearest(Pair near[], int puntiTemp, int k)
     return -1;
 }
 
+void PrintObject(int index, int similarity_score, Loan* pObject) 
+{
+    printf("Oggetto [%d] - punti di similarità: %d/13\n", index, similarity_score);
+    puts("{");
+    printf("\t%s: %s,\n", "\"credit_policy\"", pObject->credit_policy);
+    printf("\t%s: %s,\n", "\"purpose\"", pObject->purpose);
+    printf("\t%s: %s,\n", "\"int_rate\"", pObject->int_rate);
+    printf("\t%s: %s,\n", "\"installments\"", pObject->installments);
+    printf("\t%s: %s,\n", "\"long_annual_inc\"", pObject->log_annual_inc);
+    printf("\t%s: %s,\n", "\"dti\"", pObject->dti);
+    printf("\t%s: %s,\n", "\"fico\"", pObject->fico);
+    printf("\t%s: %s,\n", "\"days_with_cr_line\"", pObject->days_with_cr_line);
+    printf("\t%s: %s,\n", "\"revol_bal\"", pObject->revol_bal);
+    printf("\t%s: %s,\n", "\"revol_util\"", pObject->revol_util);
+    printf("\t%s: %s,\n", "\"inq_last_6mths\"", pObject->inq_last_6mths);
+    printf("\t%s: %s,\n", "\"delinq_2yrs\"", pObject->delinq_2yrs);
+    printf("\t%s: %s,\n", "\"pub_rec\"", pObject->pub_rec);
+    printf("\t%s: %s,\n", "\"not_fully_paid\"", pObject->not_fully_paid);
+    puts("}");
+    puts("");
+}
+
 int main()
 {
     int k;
@@ -99,7 +121,7 @@ int main()
     
     //Apro il file con un percorso non relativo, quindi da cambiare con il file messo nello zip
     FILE *file;
-    char filename[] = "/Users/riccardo/Documents/GitHub/elaborati-programmazione/sett7_06-11-2023/DS-Credit/loan_data.csv"; // Inserisci il nome del TUO file CSV
+    char filename[] = "/Users/nickolausen/Library/CloudStorage/OneDrive-AlmaMaterStudiorumUniversitàdiBologna/UNI/1o Anno/Programmazione/Repo_ESERCIZI/elaborati-programmazione/sett7_06-11-2023/DS-Credit/loan_data.csv"; // Inserisci il nome del TUO file CSV
 
     // Apro il file
     file = fopen(filename, "r");
@@ -235,27 +257,10 @@ int main()
         col++;
     }
 
-    printf("\n Oggetti più vicini trovati: \n");
+    printf("\n>> Oggetti più vicini trovati: \n");
     for (int i = 0; i < k; i++)
     {
-        printf("Oggetto [%d] - punti di similarità: %d\n", i, nearest[i].puntiSimilarita);
-        puts("{");
-        printf("\t%s: %s\n",  "credit_policy", nearest[i].oggetto.credit_policy);
-        printf("\t%s: %s\n ", "purpose", nearest[i].oggetto.purpose);
-        printf("\t%s: %s\n ", "int_rate", nearest[i].oggetto.int_rate);
-        printf("\t%s: %s\n ", "installments", nearest[i].oggetto.installments);
-        printf("\t%s: %s\n ", "long_annual_inc", nearest[i].oggetto.log_annual_inc);
-        printf("\t%s: %s\n ", "dti", nearest[i].oggetto.dti);
-        printf("\t%s: %s\n ", "fico", nearest[i].oggetto.fico);
-        printf("\t%s: %s\n ", "days_with_cr_line", nearest[i].oggetto.days_with_cr_line);
-        printf("\t%s: %s\n ", "revol_bal", nearest[i].oggetto.revol_bal);
-        printf("\t%s: %s\n ", "revol_util", nearest[i].oggetto.revol_util);
-        printf("\t%s: %s\n ", "inq_last_6mths", nearest[i].oggetto.inq_last_6mths);
-        printf("\t%s: %s\n ", "delinq_2yrs", nearest[i].oggetto.delinq_2yrs);
-        printf("\t%s: %s\n ", "pub_rec", nearest[i].oggetto.pub_rec);
-        printf("\t%s: %s\n ", "not_fully_paid", nearest[i].oggetto.not_fully_paid);
-        puts("}");
-        puts("");
+        PrintObject(i, nearest[i].puntiSimilarita, &nearest[i].oggetto);
     }
 
     // Chiudi il file
