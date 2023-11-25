@@ -303,6 +303,17 @@ eStateType play_game(int maze[NRROWS][NRCOLS],
     return current_cell;
 }
 
+void init_already_visited_map(bool alreadyVisited[NRROWS][NRCOLS]) 
+{
+    for (int row = 0; row < NRROWS; row++) 
+    {
+        for (int col = 0; col < NRCOLS; col++) 
+        {
+            alreadyVisited[row][col] = false;
+        }
+    }
+}
+
 // Return the elapsed ticks from the beginning of the training
 time_t train_agent(int maze[NRROWS][NRCOLS], 
     MazeScores* scores,
@@ -318,20 +329,14 @@ time_t train_agent(int maze[NRROWS][NRCOLS],
 
     // Keep track of visited cells
     bool alreadyVisited[NRROWS][NRCOLS];
-    for (int row = 0; row < NRROWS; row++) 
-    {
-        for (int col = 0; col < NRCOLS; col++) 
-        {
-            alreadyVisited[row][col] = false;
-        }
-    }
+    init_already_visited_map(alreadyVisited);
 
-    int trainingStep = 0, nrIterations = 0;
+    int trainingStep = 0, nrIterations = 0, loopCount = 0;
     while (trainingStep < MAX_TRAINING) 
     {
         CLEAR_CONSOLE;
         int percentage = trainingStep * 100 / MAX_TRAINING;
-        printf("# Training status: %d%% completed [%d/%d]:\n", percentage, trainingStep, MAX_TRAINING);
+        printf("# Training status: %d%% completed [%d/%d]\n", percentage, trainingStep, MAX_TRAINING);
         printf("## Iteration: %d\n", nrIterations++);
         
         int rndDecision = rand() % 100 + 1;
@@ -410,9 +415,15 @@ time_t train_agent(int maze[NRROWS][NRCOLS],
         }
 
         if (alreadyVisited[current_position.row][current_position.col])
+        {
             reward += scores->alreadyVisitedMalus;
-        else
+            loopCount++;
+        }    
+        else 
+        {
             alreadyVisited[current_position.row][current_position.col] = true;
+            loopCount = 0;
+        }
 
         int current_state = to_state(&current_position, NRCOLS);
 
@@ -441,12 +452,14 @@ time_t train_agent(int maze[NRROWS][NRCOLS],
         q_table[current_state][action] = q_table[current_state][action] + LEARNING_RATE * 
             (reward + DISCOUNT_RATE * maxFutureQValue - q_table[current_state][action]);
 
-        if (game_over(maze[current_position.row][current_position.col])) 
+        if (game_over(maze[current_position.row][current_position.col]) || loopCount >= 4) 
         {
             eps -= 100.0f / MAX_TRAINING;
             trainingStep++;
             current_position = *initial_position;
             current_state = initial_state;
+            loopCount = 0;
+            init_already_visited_map(alreadyVisited);
         }
     }
 
@@ -517,7 +530,7 @@ int main()
     do 
     {
         printf("How many training iterations do you want? (At least 1)\n");
-        printf("%sWARNING: Low training iterations increase the chance of getting stuck in a loop.%s\n", CYLW, CRESET);
+        printf("%sWARNING: Low training iterations increase the chance of getting stuck in a loop.%s\n(At least 1000 iterations are recommended)\n", CYLW, CRESET);
         printf("Input: ");
         fflush(stdin);
         scanf("%d", &nrTrainingSteps);
