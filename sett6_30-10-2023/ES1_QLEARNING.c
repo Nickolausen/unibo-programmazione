@@ -325,8 +325,7 @@ time_t train_agent(int maze[NRROWS][NRCOLS],
             alreadyVisited[row][col] = false;
         }
     }
-    
-    print_maze(NRROWS, NRCOLS, maze, &current_position);
+
     int trainingStep = 0, nrIterations = 0;
     while (trainingStep < MAX_TRAINING) 
     {
