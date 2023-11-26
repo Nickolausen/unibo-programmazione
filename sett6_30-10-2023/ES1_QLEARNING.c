@@ -479,7 +479,7 @@ int main()
     int maze[NRROWS][NRCOLS];
     MazeComposition mazeComposition = 
     {
-        7, // NR° BOMBS
+        10, // NR° BOMBS
         6, // NR° CHARGES
         {0,0}, // START POINT
         {9, 9} // END POINT
@@ -490,7 +490,7 @@ int main()
         +10, // Charge bonus
         -1, // Empty tile malus
         100, // End score
-        -10 // Already visited malus
+        -20 // Already visited malus
     };
 
     Coordinates initial_position = {
