@@ -1,7 +1,7 @@
-Alternativa,Bar,Giorno,Fame,Affollato,Prezzo,Pioggia,Prenotazione,Tipo,Attesa stimata
-vero,vero,vero,vero,pieno,$$,falso,vero,italiano,>60
-vero,falso,sabato,vero,qualcuno,$,falso,vero,francese,30-60
-falso,vero,venerdì,falso,nessuno, $$$,vero,falso,fast-food,<10
-vero,vero,domenica,falso,qualcuno,$,falso,falso,thai,10-29
-falso,falso,lunedì,vero,pieno,$$$,vero,vero,italiano,>60
-vero,falso,martedì,vero,nessuno,$$,falso,falso,fast-food,<10
+Valore,Alternativa,Bar,Giorno,Fame,Affollato,Prezzo,Pioggia,Prenotazione,Tipo,Attesa stimata
+falso,vero,vero,vero,vero,pieno,$$,falso,vero,italiano,>60
+vero,vero,falso,sabato,vero,qualcuno,$,falso,vero,francese,30-60
+falso,falso,vero,venerdì,falso,nessuno, $$$,vero,falso,fast-food,<10
+vero,vero,vero,domenica,falso,qualcuno,$,falso,falso,thai,10-29
+vero,falso,falso,lunedì,vero,pieno,$$$,vero,vero,italiano,>60
+vero,vero,falso,martedì,vero,nessuno,$$,falso,falso,fast-food,<10

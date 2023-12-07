@@ -6,9 +6,14 @@
     > Riccardo Ventrucci <riccardo.ventrucci@studio.unibo.it>;
 */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
+
+#define MAX_ROW 10000
+#define MAX_LEN 200
 
 typedef enum {
     nessuno,
@@ -51,9 +56,97 @@ typedef struct
     estimated_waiting waiting;
 } Hypothesis;
 
+bool Aspettiamo(){
+    bool risultato = false;
 
+    return risultato;
+}
+
+char **LetturaFile(FILE *file)
+{
+    char fileText[MAX_ROW][MAX_LEN] = {0};
+    char line[MAX_ROW][MAX_LEN];
+    long long col = 0;
+
+    // Leggo il file CSV riga per riga
+    int i = 0;
+    while (fgets(line[col], MAX_LEN, file))
+    {
+        char *token;
+        int j = 0;
+        token = strtok(line[col], ",");
+        while (token != NULL)
+        {
+            fileText[i][j] = token;
+            
+            // Avanzo di colonna
+            token = strtok(NULL, ",");
+
+            // Cambio la colonna 
+            j++;
+        }
+        i++;
+    }
+
+    return file;
+}
+
+char *Training(FILE *file)
+{
+    //Iniziallizzazione ipotesi vuota
+    char h[] = {'ϕ','ϕ','ϕ','ϕ','ϕ','ϕ','ϕ','ϕ','ϕ'};
+    
+    char line[MAX_ROW][MAX_LEN];
+    long long col = 0;
+
+    // Leggo il file CSV riga per riga
+    while (fgets(line[col], MAX_LEN, file))
+    {
+        char *token;
+        int i = 0;
+        token = strtok(line[col], ",");
+
+        while (token != NULL)
+        {
+            //Controllo l'ipotesi solo se il "risultato" è vero 
+            if(i == 0 && token == "vero")
+            {
+                if(h[i] == 'ϕ')
+                    h[i] = token;
+                else
+                {
+                    if(h[i] != token)
+                         h[i] = '?';
+                }
+
+            }
+            else{
+                break;
+            }
+        // Avanzo di colonna
+        token = strtok(NULL, ",");
+
+        // Cambio la colonna
+        i++;
+        }
+    }
+    return h;
+}
 
 int main() 
 {
-    FILE* pFile = fopen("dataset-finds.csv", "rwa");
+    //Inizializzazione Input file
+    FILE* pFile = NULL;
+
+    //Controllo input file esistente
+    if((pFile =fopen("dataset-finds.csv", "rwa"))== NULL){
+        printf("ERRORE LETTURA FILE");
+        return 1;
+    }
+    
+    char model[] = Training(pFile);
+
+
+    //Chiusura file
+    fclose(pFile);
 }
