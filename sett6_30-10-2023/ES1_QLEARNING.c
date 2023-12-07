@@ -479,10 +479,10 @@ int main()
     int maze[NRROWS][NRCOLS];
     MazeComposition mazeComposition = 
     {
-        10, // NR° BOMBS
-        6, // NR° CHARGES
+        30, // NR° BOMBS
+        20, // NR° CHARGES
         {0,0}, // START POINT
-        {9, 9} // END POINT
+        {NRROWS - 1, NRCOLS - 1} // END POINT
     };
 
     MazeScores scores = { 
