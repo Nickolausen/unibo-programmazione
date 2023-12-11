@@ -645,20 +645,20 @@ int main()
             {
                 while(!ok2)
                 {
-                    // printf("Inserire il valore di %s: ", valori[i]);
-                    // char str[25];
-                    // scanf("%s", str);
-                    // ok2 = ControlloInput(str, i);
-                    // int len = strlen(str);
-                    // ipotesi[i] = malloc(len* sizeof(char));
-                    // strcpy(ipotesi[i], str);
-                    // printf("\n");
+                    printf("Inserire il valore di %s: ", valori[i]);
+                    char str[25];
+                    scanf("%s", str);
+                    ok2 = ControlloInput(str, i);
+                    int len = strlen(str);
+                    ipotesi[i] = malloc(len* sizeof(char));
+                    strcpy(ipotesi[i], str);
+                    printf("\n");
 
                     //PER DEBUG
-                    int len = strlen(ipotesi3[i]);
-                    ipotesi[i] = malloc(len* sizeof(char));
-                    strcpy(ipotesi[i], ipotesi3[i]);
-                    ok2 = true;
+                    // int len = strlen(ipotesi3[i]);
+                    // ipotesi[i] = malloc(len* sizeof(char));
+                    // strcpy(ipotesi[i], ipotesi3[i]);
+                    // ok2 = true;
                 }
                 ok2 = false;
             }
@@ -669,12 +669,12 @@ int main()
         printf("Il modello prevede che per l'ipotesi data bisognerebbe: %s\n\n" , Aspettiamo(ipotesi, modello) ? "aspettare" : "NON aspettare");
         
         printf("Vuoi aggiungere questa ipotesi al modello di training? (Y/N):");
-        // char input[20];
-        // scanf(" %s", input);
+        char input[20];
+        scanf(" %s", input);
         
         //PER DEBUG
-        char input[] = {"Y"};
-        printf("\n");
+        // char input[] = {"Y"};
+        // printf("\n");
         int val = strncmp(input, "Y", 2);
         if(val == 0)
         {
