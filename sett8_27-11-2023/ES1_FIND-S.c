@@ -385,24 +385,24 @@ void AggiungiADataSet(Hypothesis *dataset, Hypothesis ip, int count)
     dataset[FILE_ROWS + count] = ip;
 }
 //Metodo di lettura file CSV
-char ***LetturaFile(FILE *file) {
+char ***LetturaFile(FILE *file, int fileRows, int maxLength) {
     //allocazione memoria matrice di stringhe 
     //{
     //  {{'a','b','c',','} {'d','e','f',','}},
     //  {}
     //}
-    char ***data = (char ***)malloc(FILE_ROWS * sizeof(char **));
-    for (int i = 0; i < FILE_ROWS; i++) {
-        data[i] = (char **)malloc(MAX_LEN * sizeof(char *));
-        for (int j = 0; j < MAX_LEN; j++) {
-            data[i][j] = (char *)malloc(MAX_LEN * sizeof(char));
+    char ***data = (char ***)malloc(fileRows * sizeof(char **));
+    for (int i = 0; i < fileRows; i++) {
+        data[i] = (char **)malloc(maxLength * sizeof(char *));
+        for (int j = 0; j < maxLength; j++) {
+            data[i][j] = (char *)malloc(maxLength * sizeof(char));
         }
     }
 
     char line[MAX_LEN];
     int row = 0;
     //finchè c'è un'altra riga continuo a leggere il file csv
-    while (fgets(line, MAX_LEN, file)) {
+    while (fgets(line, maxLength, file)) {
         char *token;
         int col = 0;
         //prendo come stringa tutti i char prima della ,
@@ -491,11 +491,11 @@ Hypothesis ConvertiStruct(char **ip, bool isDatasetRow, bool isAdded)
     return ipotesi;
 }
 //Metodo Aspettiamo con stringhe
-bool Aspettiamo(char** ipo, char** modello)
+bool Aspettiamo(char** ipo, char** modello, float mult1, float mult2)
 {
     //considero per buona l'opzione di aspettare se il risultato di count è >= 4
     // valore uguale per ipotesi e modello = 1
-    // valore ? per modello = 0,25
+    // valore ? per modello = da input
     // valore diverso = 0
     bool aspetta = false;
     float count = 0;
@@ -509,9 +509,9 @@ bool Aspettiamo(char** ipo, char** modello)
         strncpy(str1, ipo[i], 5);
         strncpy(str2, modello[i], 5);
         if(strncmp(str1, str2, 5) == 0)
-            count += 1;
+            count += 1 * mult1;
         else if(strncmp(str2, "?", 1) == 0)
-            count += 0,25;
+            count += mult2;
     }
 
     if(count >= 4)
@@ -582,28 +582,62 @@ bool ControlloInput(char* str, int i)
 
 int main() 
 {
-    //per debug
-    Hypothesis datasetText[] = {
-        {'v', 'v', 'v', 'v', pieno, mid, 'f', 'v', italiano, over60, false},
-        {'v', 'f', 'v', 'v', qualcuno, cheap, 'f', 'v', francese, over30, false},
-        {'f', 'v', 'v', 'f', nessuno, expensive, 'v', 'f', fastfood, under10, true},
-        {'v', 'v', 'f', 'f', qualcuno, cheap, 'f', 'f', thai, over10, false},
-        {'f', 'f', 'f', 'v', pieno, expensive, 'v', 'v', italiano, over60, false},
-        {'v', 'f', 'f', 'v', nessuno, mid, 'f', 'f', fastfood, under10, false}
-    };
+    //PER DEBUG
+    // Hypothesis datasetText[] = {
+    //     {'v', 'v', 'v', 'v', pieno, mid, 'f', 'v', italiano, over60, false},
+    //     {'v', 'f', 'v', 'v', qualcuno, cheap, 'f', 'v', francese, over30, false},
+    //     {'f', 'v', 'v', 'f', nessuno, expensive, 'v', 'f', fastfood, under10, true},
+    //     {'v', 'v', 'f', 'f', qualcuno, cheap, 'f', 'f', thai, over10, false},
+    //     {'f', 'f', 'f', 'v', pieno, expensive, 'v', 'v', italiano, over60, false},
+    //     {'v', 'f', 'f', 'v', nessuno, mid, 'f', 'f', fastfood, under10, false}
+    // };
+    //------------------------------------------------------------------------------
 
     int addedRows = 0;
+    int readRows = 0;
+
+    bool okInputFile = false;
     //Inizializzazione Input file
     FILE* pFile = NULL;
-
-    //Controllo input file esistente
-    if((pFile =fopen("dataset-finds.csv", "r"))== NULL){
-        printf("ERRORE LETTURA FILE");
-        return 1;
+    while(!okInputFile)
+    {
+        char fileStd[2];
+        printf("Usare file standard? (Y/N)");
+        scanf(" %s", fileStd);
+        //PER DEBUG
+        // char fileStd[] = {"Y"};
+        //-----------------------
+        int cmpfile = strncmp(fileStd, "Y", 1);
+        int cmpfile2 = strncmp(fileStd, "N", 1); 
+        if(cmpfile == 0)
+        {
+            if((pFile =fopen("dataset-finds.csv", "r"))== NULL)
+            {
+                printf("ERRORE LETTURA FILE");
+                return -1;
+            }
+            okInputFile = true;
+        }
+        else
+        {
+            char fileName[100];
+            printf("Inserire nome file :");
+            scanf(" %s", fileName);
+            printf("\n");
+            //Controllo input file esistente
+            //"dataset-finds.csv"
+            if((pFile =fopen(fileName, "r"))== NULL)
+            {
+                printf("ERRORE LETTURA FILE\n");
+            }
+            else
+                okInputFile = true;
+        }
     }
     
+    
     //Inizializzazione dataset vuoto
-    char*** dataset = LetturaFile(pFile);
+    char*** dataset = LetturaFile(pFile, FILE_ROWS, MAX_LEN);
     //Creo una copia del dataset in un array della struct
     Hypothesis datasetStruct[50];
     for(int i = 0; i < FILE_ROWS; i++)
@@ -624,57 +658,147 @@ int main()
     //Chiusura file
     fclose(pFile);
 
-    //conteggio righe aggiunte
-    
     bool continua = true;
+    //------------
+    int countDebug =0;
+    //------------
     while(continua)
     {
         bool ok =false;
         bool ok2 = false;
-        char *valori[10] = {"Alternativa","Bar","Giorno","Fame","Affollato","Prezzo","Pioggia","Prenotazione","Tipo","Attesa stimata"};
+        char *valori[10] = {"Alternativa (vero/falso)","Bar (vero/falso)","Giorno (vero/falso)","Fame (vero/falso)",
+        "Affollato (nessuno/qualcuno/pieno)","Prezzo ($/$$/$$$)","Pioggia (vero/falso)",
+        "Prenotazione (vero/falso)","Tipo","Attesa stimata"};
         int valoriMalloc[10] = {5,5,5,5,8,3,5,5,9,5};
         char **ipotesi;
         //PER DEBUG
-        //char *ipotesi2[] = {"vero", "vero", "vero", "vero", "pieno", "$$", "falso", "vero", "italiano", ">60"};
-        char *ipotesi3[] = {"vero", "vero", "vero", "vero", "pieno", "$", "vero", "falso", "fast-food", "<10"};
+        // char *ipotesi2[] = {"vero", "vero", "vero", "vero", "pieno", "$$", "falso", "vero", "italiano", ">60"};
+        //                  falso,vero,vero,falso,nessuno,$$$,vero,falso,fast-food,<10
+        // char *ipotesi3[] = {"vero", "vero", "vero", "vero", "pieno", "$", "vero", "falso", "fast-food", "10-29"};
+        //-------------------------------------------------------------------------------------------------------
         ipotesi = malloc(10 * sizeof(char*));
+
+        //lettura file exp per altre ipotesi
+        FILE* expFile = NULL;
+        if((expFile = fopen("exp.csv", "r"))== NULL)
+        {
+            printf("ERRORE LETTURA FILE");
+            return -1;
+        }
+        char*** exp = LetturaFile(expFile, 10, MAX_LEN); 
+        fclose(expFile);
+        //---------------------------------------
         while(!ok)
         {
-            printf("Inserire i valori da testare: \n");
-            for(int i = 0; i < 10; i++)
+            char useFile[5];
+            printf("Usare valori in input o da file? (1/2)");
+            scanf(" %s", useFile);
+            //PER DEBUG
+            // char useFile[] = {"2"};
+            //--------------------
+            int useFileOk = strncmp(useFile, "2", 1);
+            if(useFileOk == 0)
             {
-                while(!ok2)
+                if(readRows == 10)
                 {
-                    printf("Inserire il valore di %s: ", valori[i]);
-                    char str[25];
-                    scanf("%s", str);
-                    ok2 = ControlloInput(str, i);
-                    int len = strlen(str);
-                    ipotesi[i] = malloc(len* sizeof(char));
-                    strcpy(ipotesi[i], str);
-                    printf("\n");
-
-                    //PER DEBUG
-                    // int len = strlen(ipotesi3[i]);
-                    // ipotesi[i] = malloc(len* sizeof(char));
-                    // strcpy(ipotesi[i], ipotesi3[i]);
-                    // ok2 = true;
+                    printf("\nRaggiunto il numero massimo di righe da file\n");
                 }
-                ok2 = false;
+                else
+                {
+                    //nel caso si leggano gli input dal file exp, ogni iterazione si legge la riga dopo (MAX 10)
+                    char **strings = exp[readRows];
+                    for(int i = 0; i < 10; i++)
+                    {
+                        char *str = strings[i];
+                        int len = strlen(str);
+                        ipotesi[i] = malloc(len* sizeof(char));
+                        strcpy(ipotesi[i], str);
+                    }   
+                    readRows++; 
+                    ok = true;
+                    printf("\nIpotesi da file exp : \n");
+                    StampaArray(ipotesi, 10);
+                }
             }
-            ok = true;
-        }
-        Hypothesis ipotesi3Str = ConvertiStruct(ipotesi, false, false);
+            else
+            {
+                printf("Inserire i valori da testare: \n");
+                for(int i = 0; i < 10; i++)
+                {
+                    while(!ok2)
+                    {
+                        printf("Inserire il valore di %s: ", valori[i]);
+                        char str[25];
+                        scanf("%s", str);
+                        ok2 = ControlloInput(str, i);
+                        int len = strlen(str);
+                        ipotesi[i] = malloc(len* sizeof(char));
+                        strcpy(ipotesi[i], str);
+                        printf("\n");
 
-        printf("Il modello prevede che per l'ipotesi data bisognerebbe: %s\n\n" , Aspettiamo(ipotesi, modello) ? "aspettare" : "NON aspettare");
-        
+                        //PER DEBUG
+                        // if(countDebug == 1)
+                        // {
+                        //      int len = strlen(ipotesi2[i]);
+                        //     ipotesi[i] = malloc(len* sizeof(char));
+                        //     strcpy(ipotesi[i], ipotesi2[i]);
+                        // }
+                        // else
+                        // {
+                        //     int len = strlen(ipotesi3[i]);
+                        //     ipotesi[i] = malloc(len* sizeof(char));
+                        //     strcpy(ipotesi[i], ipotesi3[i]);
+                        //     ok2 = true;
+                        // } 
+                        //------------------------------------------            
+                    }
+                    ok2 = false;
+                }
+                ok = true;
+                //------------
+                //countDebug++;
+                //------------
+            }           
+        }
+        //Hypothesis ipotesi3Str = ConvertiStruct(ipotesi, false, false);
+
+        printf("\nIl modello prevede che per l'ipotesi data bisognerebbe: %s\n\n" , Aspettiamo(ipotesi, modello, 1, 0.25) ? "aspettare" : "NON aspettare");
+
+        //Controllo correttezza ipotesi da metodo aspettiamo
+        bool okCorr = false;
+        while(!okCorr)
+        {
+            printf("Il risultato e' corretto? (Y/N)");
+            char corr[20];
+            scanf(" %s",corr);
+            //PER DEBUG
+            //char corr[] = {"N"};
+            //-----------------
+            int yInt = strncmp(corr, "Y", 1);
+            int nInt = strncmp(corr, "N", 1);
+            if(yInt != 0 && nInt != 0)
+                printf("Valore non riconosciuto, inserire un valore corretto\n");
+            else if(yInt == 0)
+            {
+                okCorr = true;
+            }
+            else
+            {
+                //Se il risultato della funzione Aspettiamo non è corretto,
+                //la rieseguo con un moltiplicatore diverso per ? e per uguale(= == 0,5 | ? == 0)
+                printf("\nConsiderando che lo scorso risultato era errato, il modello prevede che per l'ipotesi data bisognerebbe: %s\n\n" , Aspettiamo(ipotesi, modello, 0.5 ,0) ? "aspettare" : "NON aspettare");
+                okCorr = true;
+            }
+        }
+
         printf("Vuoi aggiungere questa ipotesi al modello di training? (Y/N):");
         char input[20];
         scanf(" %s", input);
         
         //PER DEBUG
-        // char input[] = {"Y"};
-        // printf("\n");
+        //char input[] = {"Y"};
+        //--------------------
+        printf("\n");
         int val = strncmp(input, "Y", 2);
         if(val == 0)
         {
@@ -692,6 +816,9 @@ int main()
         printf("Vuoi continuare: (NO per uscire)...");
         scanf(" %s", cont);
         printf("\n\n\n");
+        //PER DEBUG
+        // char cont[] = "asdasd";
+        //------------------------
         int intCont = strncmp(cont , "NO", 2);
         if(intCont == 0)
             continua = false;
