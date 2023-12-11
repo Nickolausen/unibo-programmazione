@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define MAX_ROW 6
+#define FILE_ROWS 6
 #define MAX_LEN 100
 
 #pragma ENUMS
@@ -201,10 +201,30 @@ void StampaStruct(Hypothesis ipo)
 }
 //Stampa array dell'ipotesi
 void StampaArray(char **point, int col) {
-    char *valore[10] = {"Alternativa","Bar","Giorno","Fame","Affollato","Prezzo","Pioggia","Prenotazione","Tipo","Attesa stimata"};
+    char *valoriStruct[10] = {"Alternativa","Bar","Giorno","Fame","Affollato","Prezzo","Pioggia","Prenotazione","Tipo","Attesa stimata"};
     for (int i = 0; i < col; i++) {
-        printf("\n %s : %s", valore[i], point[i]);
+        printf("\n %s : %s", valoriStruct[i], point[i]);
     }
+}
+//Metodo per stampare il dataset
+void StampaDataSet(Hypothesis *dataset, int addedRows)
+{
+    printf("DATASET: \n");
+    char *valoriStruct[11] = {"Alternativa","Bar","Giorno","Fame","Affollato","Prezzo","Pioggia","Prenotazione","Tipo","Attesa stimata","Valore"};
+    printf("\n");
+    for(int i = 0; i < 11; i++)
+        printf("%s\t", valoriStruct[i]);
+    printf("\n");
+    for(int i = 0; i < FILE_ROWS + addedRows; i++)
+    {
+        char **strings;
+        strings = EnumToString(dataset[i]); 
+        for(int j = 0; j < 10; j++)
+            printf("%s\t  ", strings[j]);
+        printf("%d\t", dataset[i].value);
+        printf("\n");
+    }
+    printf("\n");
 }
 //Metodo algoritmo find-S con stringhe
 char** Find_S(char*** dataset, int righe, int col)
@@ -256,10 +276,10 @@ Hypothesis Find_S_Struct(Hypothesis *dataset, int righe, int col)
     //inizializzo l'ipotesi 
     Hypothesis h;
 
+    bool full = false;
     //Alternativa,Bar,Giorno,Fame,Affollato,Prezzo,Pioggia,Prenotazione,Tipo,Attesa stimata, VALORE IPOTESI
     for(int i = 0; i < righe; i++)
     {
-        bool full = false;
         //se la stringa del file csv inizia per vero, vuol dire che quella riga è da prendere come ipotesi buona
         if(dataset[i].value)
         {   
@@ -359,9 +379,10 @@ Hypothesis Find_S_Struct(Hypothesis *dataset, int righe, int col)
     }
     return h;
 }
-void AggiungiADataSet(char*** dataset, char** riga)
-{
-
+//Aggiunge una riga al dataset
+void AggiungiADataSet(Hypothesis *dataset, Hypothesis ip, int count)
+{   
+    dataset[FILE_ROWS + count] = ip;
 }
 //Metodo di lettura file CSV
 char ***LetturaFile(FILE *file) {
@@ -370,8 +391,8 @@ char ***LetturaFile(FILE *file) {
     //  {{'a','b','c',','} {'d','e','f',','}},
     //  {}
     //}
-    char ***data = (char ***)malloc(MAX_ROW * sizeof(char **));
-    for (int i = 0; i < MAX_ROW; i++) {
+    char ***data = (char ***)malloc(FILE_ROWS * sizeof(char **));
+    for (int i = 0; i < FILE_ROWS; i++) {
         data[i] = (char **)malloc(MAX_LEN * sizeof(char *));
         for (int j = 0; j < MAX_LEN; j++) {
             data[i][j] = (char *)malloc(MAX_LEN * sizeof(char));
@@ -397,7 +418,7 @@ char ***LetturaFile(FILE *file) {
     return data;
 }
 //Conversione Ipotesi String in Struct
-Hypothesis ConvertiStruct(char **ip, bool isDatasetRow)
+Hypothesis ConvertiStruct(char **ip, bool isDatasetRow, bool isAdded)
 {
     //Alternativa,Bar,Giorno,Fame,Affollato,Prezzo,Pioggia,Prenotazione,Tipo,Attesa stimata
     Hypothesis ipotesi;
@@ -461,10 +482,15 @@ Hypothesis ConvertiStruct(char **ip, bool isDatasetRow)
         else if(k1 == 0)
             ipotesi.value = false;
     }
+
+    if(isAdded)
+    {
+        ipotesi.value = true;
+    }
     
     return ipotesi;
 }
-//Manca implementazione con struct Hypotesis perchè non considera il valore ?
+//Metodo Aspettiamo con stringhe
 bool Aspettiamo(char** ipo, char** modello)
 {
     //considero per buona l'opzione di aspettare se il risultato di count è >= 4
@@ -556,6 +582,17 @@ bool ControlloInput(char* str, int i)
 
 int main() 
 {
+    //per debug
+    Hypothesis datasetText[] = {
+        {'v', 'v', 'v', 'v', pieno, mid, 'f', 'v', italiano, over60, false},
+        {'v', 'f', 'v', 'v', qualcuno, cheap, 'f', 'v', francese, over30, false},
+        {'f', 'v', 'v', 'f', nessuno, expensive, 'v', 'f', fastfood, under10, true},
+        {'v', 'v', 'f', 'f', qualcuno, cheap, 'f', 'f', thai, over10, false},
+        {'f', 'f', 'f', 'v', pieno, expensive, 'v', 'v', italiano, over60, false},
+        {'v', 'f', 'f', 'v', nessuno, mid, 'f', 'f', fastfood, under10, false}
+    };
+
+    int addedRows = 0;
     //Inizializzazione Input file
     FILE* pFile = NULL;
 
@@ -569,24 +606,26 @@ int main()
     char*** dataset = LetturaFile(pFile);
     //Creo una copia del dataset in un array della struct
     Hypothesis datasetStruct[50];
-    for(int i = 0; i < MAX_ROW; i++)
+    for(int i = 0; i < FILE_ROWS; i++)
     {
-        datasetStruct[i] = ConvertiStruct(dataset[i], true);
+        datasetStruct[i] = ConvertiStruct(dataset[i], true, false);
     }
+    StampaDataSet(datasetStruct, addedRows);
     //Calcolo modello con algoritmo Find-S
-    char** modello = Find_S(dataset, MAX_ROW, MAX_LEN);
+    char** modello = Find_S(dataset, FILE_ROWS, MAX_LEN);
     //Calcolo modello con Find-S e struct
-    Hypothesis modelloStruct = Find_S_Struct(datasetStruct, MAX_ROW, MAX_LEN);
+    Hypothesis modelloStruct = Find_S_Struct(datasetStruct, FILE_ROWS, MAX_LEN);
     printf("Ipotesi calcolata dall'Algoritmo Find-S : \n");
-    StampaArray(modello, 10);
-    printf("\n");
-    printf("STAMPA VALORI STRUCT\n");
-    Hypothesis model = ConvertiStruct(modello, false);
-    
-    StampaStruct(model);
+    //StampaArray(modello, 10);
+    //printf("\n");
+    //printf("STAMPA VALORI STRUCT\n");
+    //Hypothesis model = ConvertiStruct(modello, false);
+    StampaStruct(modelloStruct);
     //Chiusura file
     fclose(pFile);
 
+    //conteggio righe aggiunte
+    
     bool continua = true;
     while(continua)
     {
@@ -595,8 +634,9 @@ int main()
         char *valori[10] = {"Alternativa","Bar","Giorno","Fame","Affollato","Prezzo","Pioggia","Prenotazione","Tipo","Attesa stimata"};
         int valoriMalloc[10] = {5,5,5,5,8,3,5,5,9,5};
         char **ipotesi;
-        //per il debug
+        //PER DEBUG
         //char *ipotesi2[] = {"vero", "vero", "vero", "vero", "pieno", "$$", "falso", "vero", "italiano", ">60"};
+        char *ipotesi3[] = {"vero", "vero", "vero", "vero", "pieno", "$", "vero", "falso", "fast-food", "<10"};
         ipotesi = malloc(10 * sizeof(char*));
         while(!ok)
         {
@@ -605,28 +645,53 @@ int main()
             {
                 while(!ok2)
                 {
-                    printf("Inserire il valore di %s: ", valori[i]);
-                    char str[25];
-                    scanf("%s", str);
-                    ok2 = ControlloInput(str, i);
-                    int len = strlen(str);
+                    // printf("Inserire il valore di %s: ", valori[i]);
+                    // char str[25];
+                    // scanf("%s", str);
+                    // ok2 = ControlloInput(str, i);
+                    // int len = strlen(str);
+                    // ipotesi[i] = malloc(len* sizeof(char));
+                    // strcpy(ipotesi[i], str);
+                    // printf("\n");
+
+                    //PER DEBUG
+                    int len = strlen(ipotesi3[i]);
                     ipotesi[i] = malloc(len* sizeof(char));
-                    strcpy(ipotesi[i], str);
-                    printf("\n");
+                    strcpy(ipotesi[i], ipotesi3[i]);
+                    ok2 = true;
                 }
                 ok2 = false;
             }
             ok = true;
         }
-
-        //ipotesi per debug
-        //char *ipotesi2[] = {"vero", "vero", "vero", "vero", "pieno", "$$", "falso", "vero", "italiano", ">60"};
+        Hypothesis ipotesi3Str = ConvertiStruct(ipotesi, false, false);
 
         printf("Il modello prevede che per l'ipotesi data bisognerebbe: %s\n\n" , Aspettiamo(ipotesi, modello) ? "aspettare" : "NON aspettare");
+        
+        printf("Vuoi aggiungere questa ipotesi al modello di training? (Y/N):");
+        // char input[20];
+        // scanf(" %s", input);
+        
+        //PER DEBUG
+        char input[] = {"Y"};
+        printf("\n");
+        int val = strncmp(input, "Y", 2);
+        if(val == 0)
+        {
+            Hypothesis ip = ConvertiStruct(ipotesi, false, true);
+            AggiungiADataSet(datasetStruct, ip, addedRows);
+            modelloStruct = Find_S_Struct(datasetStruct, FILE_ROWS + addedRows + 1, 10);
+            printf("Modello ricalcolato dopo l'aggiunta di una nuova ipotesi: \n");
+            StampaStruct(modelloStruct);
+            printf("DATASET AGGIORNATO: ");
+            addedRows++;
+            StampaDataSet(datasetStruct, addedRows);
+        }
 
-        char cont[50];
+        char cont[20];
         printf("Vuoi continuare: (NO per uscire)...");
-        scanf("%s", cont);
+        scanf(" %s", cont);
+        printf("\n\n\n");
         int intCont = strncmp(cont , "NO", 2);
         if(intCont == 0)
             continua = false;
