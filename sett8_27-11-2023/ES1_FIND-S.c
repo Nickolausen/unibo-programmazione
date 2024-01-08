@@ -207,7 +207,7 @@ void StampaArray(char **point, int col) {
     }
 }
 //Metodo per stampare il dataset
-void StampaDataSet(Hypothesis *dataset, int addedRows)
+void StampaDataSet(Hypothesis *dataset, int addedRows, int righe)
 {
     printf("DATASET: \n");
     char *valoriStruct[11] = {"Alternativa","Bar","Giorno","Fame","Affollato","Prezzo","Pioggia","Prenotazione","Tipo","Attesa stimata","Valore"};
@@ -215,7 +215,7 @@ void StampaDataSet(Hypothesis *dataset, int addedRows)
     for(int i = 0; i < 11; i++)
         printf("%s\t", valoriStruct[i]);
     printf("\n");
-    for(int i = 0; i < FILE_ROWS + addedRows; i++)
+    for(int i = 0; i < righe + addedRows; i++)
     {
         char **strings;
         strings = EnumToString(dataset[i]); 
@@ -380,9 +380,9 @@ Hypothesis Find_S_Struct(Hypothesis *dataset, int righe, int col)
     return h;
 }
 //Aggiunge una riga al dataset
-void AggiungiADataSet(Hypothesis *dataset, Hypothesis ip, int count)
+void AggiungiADataSet(Hypothesis *dataset, Hypothesis ip, int count,int righe)
 {   
-    dataset[FILE_ROWS + count] = ip;
+    dataset[righe + count] = ip;
 }
 //Metodo di lettura file CSV
 char ***LetturaFile(FILE *file, int fileRows, int maxLength) {
@@ -599,56 +599,114 @@ int main()
     bool okInputFile = false;
     //Inizializzazione Input file
     FILE* pFile = NULL;
-    while(!okInputFile)
+    char fileOrText[2];
+    printf("Caricare dataset da file o da testo? (0/1)");
+    scanf(" %s", fileOrText);
+    int fileOrTextcmp = strncmp(fileOrText, "1", 1);
+    //Inizializzazione dataset vuoto
+    char*** dataset;
+    int righeInput = 0;
+    //Input dataset da linea di comando
+    if(fileOrTextcmp == 0)
     {
-        char fileStd[2];
-        printf("Usare file standard? (Y/N)");
-        scanf(" %s", fileStd);
-        //PER DEBUG
-        // char fileStd[] = {"Y"};
-        //-----------------------
-        int cmpfile = strncmp(fileStd, "Y", 1);
-        int cmpfile2 = strncmp(fileStd, "N", 1); 
-        if(cmpfile == 0)
+        //Righe in input per allocazione memoria
+        printf("Quante righe vuoi inserire?:");
+        scanf("%d", &righeInput);
+        //Allocazione memoria dataset
+        dataset = (char ***)malloc(righeInput * sizeof(char **));
+        for (int i = 0; i < righeInput; i++)
         {
-            if((pFile =fopen("dataset-finds.csv", "r"))== NULL)
+            dataset[i] = (char **)malloc(MAX_LEN * sizeof(char *));
+            for (int j = 0; j < MAX_LEN; j++) 
+            {
+                dataset[i][j] = (char *)malloc(MAX_LEN * sizeof(char));
+            }
+        }
+        printf("\n");
+        int numeroRiga = 0;
+        while(numeroRiga < righeInput)
+        {
+            //Variabili di input
+            char inputAlternativa[5];
+            char inputBar[5];
+            char inputGiorno[5];
+            char inputFame[5];
+            char inputAffollato[10];
+            char inputPrezzo[3];
+            char inputPioggia[3];
+            char inputPrenotazione[5];
+            char inputTipo[15];
+            char inputAttesa[6];
+            char inputValore[5];
+
+            //Input ipotesi
+            printf("Alternativa: c e un ristorante nei paraggi (vero, falso)");
+            scanf(" %s", inputAlternativa);
+            printf("Bar: il ristorante ha un area bar per l attesa (vero, falso)");
+            scanf(" %s", inputBar);
+            printf("Giorno: giorno della settimana in cui si vuole andare al ristorante (vero se venerdi oppure sabato, falso diversamente)");
+            scanf(" %s", inputGiorno);
+            printf("Fame: siamo affamati (vero, falso)");
+            scanf(" %s", inputFame);
+            printf("Affollato: quante persone sono presenti nel ristorante (nessuno, qualcuno, pieno)");
+            scanf(" %s", inputAffollato);
+            printf("Prezzo: categoria di costo del ristorante ($, $$, $$$)");
+            scanf(" %s", inputPrezzo);
+            printf("Pioggia: fuori sta piovendo (vero, falso)");
+            scanf(" %s", inputPioggia);
+            printf("Prenotazione: abbiamo prenotato (vero, falso)");
+            scanf(" %s", inputPrenotazione);
+            printf("Tipo: tipo di ristorante (italiano, francese, fast-food, thai)");
+            scanf(" %s", inputTipo);
+            printf("Attesa stimata: stima del tempo di attesa (<10, 10-29, 30-60, >60)");
+            scanf(" %s", inputAttesa);
+            printf("Valore: questa ipotesi e considerata come buona? (vero, falso)");
+            scanf(" %s", inputValore);
+
+            dataset[numeroRiga][0] = inputAlternativa;
+            dataset[numeroRiga][1] = inputBar;
+            dataset[numeroRiga][2] = inputGiorno;
+            dataset[numeroRiga][3] = inputFame;
+            dataset[numeroRiga][4] = inputAffollato;
+            dataset[numeroRiga][5] = inputPrezzo;
+            dataset[numeroRiga][6] = inputPioggia;
+            dataset[numeroRiga][7] = inputPrenotazione;
+            dataset[numeroRiga][8] = inputTipo;
+            dataset[numeroRiga][9] = inputAttesa;
+            dataset[numeroRiga][10] = inputValore;
+
+            numeroRiga++;
+        }
+    }
+    else
+    {
+        //input dataset da file
+        while(!okInputFile)
+        {
+
+            if((pFile = fopen("dataset-finds.csv", "r"))== NULL)
             {
                 printf("ERRORE LETTURA FILE");
                 return -1;
             }
             okInputFile = true;
+            righeInput = 6;
         }
-        else
-        {
-            char fileName[100];
-            printf("Inserire nome file :");
-            scanf(" %s", fileName);
-            printf("\n");
-            //Controllo input file esistente
-            //"dataset-finds.csv"
-            if((pFile =fopen(fileName, "r"))== NULL)
-            {
-                printf("ERRORE LETTURA FILE\n");
-            }
-            else
-                okInputFile = true;
-        }
+        //Inizializzazione dataset con file
+        dataset = LetturaFile(pFile, righeInput, MAX_LEN);
     }
     
-    
-    //Inizializzazione dataset vuoto
-    char*** dataset = LetturaFile(pFile, FILE_ROWS, MAX_LEN);
     //Creo una copia del dataset in un array della struct
     Hypothesis datasetStruct[50];
-    for(int i = 0; i < FILE_ROWS; i++)
+    for(int i = 0; i < righeInput; i++)
     {
         datasetStruct[i] = ConvertiStruct(dataset[i], true, false);
     }
-    StampaDataSet(datasetStruct, addedRows);
+    StampaDataSet(datasetStruct, addedRows, righeInput);
     //Calcolo modello con algoritmo Find-S
-    char** modello = Find_S(dataset, FILE_ROWS, MAX_LEN);
+    char** modello = Find_S(dataset, righeInput, MAX_LEN);
     //Calcolo modello con Find-S e struct
-    Hypothesis modelloStruct = Find_S_Struct(datasetStruct, FILE_ROWS, MAX_LEN);
+    Hypothesis modelloStruct = Find_S_Struct(datasetStruct, righeInput, MAX_LEN);
     printf("Ipotesi calcolata dall'Algoritmo Find-S : \n");
     //StampaArray(modello, 10);
     //printf("\n");
@@ -803,13 +861,13 @@ int main()
         if(val == 0)
         {
             Hypothesis ip = ConvertiStruct(ipotesi, false, true);
-            AggiungiADataSet(datasetStruct, ip, addedRows);
-            modelloStruct = Find_S_Struct(datasetStruct, FILE_ROWS + addedRows + 1, 10);
+            AggiungiADataSet(datasetStruct, ip, addedRows, righeInput);
+            modelloStruct = Find_S_Struct(datasetStruct, righeInput + addedRows + 1, 10);
             printf("Modello ricalcolato dopo l'aggiunta di una nuova ipotesi: \n");
             StampaStruct(modelloStruct);
             printf("DATASET AGGIORNATO: ");
             addedRows++;
-            StampaDataSet(datasetStruct, addedRows);
+            StampaDataSet(datasetStruct, addedRows, righeInput);
         }
 
         char cont[20];
