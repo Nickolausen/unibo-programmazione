@@ -446,8 +446,11 @@ Hypothesis ConvertiStruct(char **ip, bool isDatasetRow, bool isAdded)
         ex = mid;
     else if(strcmp(ip[5], "$$$") == 0)
         ex = expensive;
-    else 
+    else{
         ex = unknownPrice;
+        printf("\n\n%s\n\n", ip[5]);
+    }
+        
     ipotesi.expensiveness = ex;
     ipotesi.isRaining = StringToChar(ip[6]);
     ipotesi.hasReservation = StringToChar(ip[7]);
@@ -527,7 +530,7 @@ bool ControlloInput(char* str, int i)
     int ok2 = 0;
     int ok3 = 0;
     int ok4 = 0;
-    if(i == 0 || i == 1 || i == 2 || i == 3 || i == 6 || i == 7)
+    if(i == 0 || i == 1 || i == 2 || i == 3 || i == 6 || i == 7 || i == 10)
     {
         ok = strcmp(str, "falso");
         ok2 = strcmp(str, "vero");
@@ -596,6 +599,10 @@ int main()
     int addedRows = 0;
     int readRows = 0;
 
+    //Valori campi di input
+    char *valori[11] = {"Alternativa (vero/falso)","Bar (vero/falso)","Giorno (vero/falso)","Fame (vero/falso)",
+        "Affollato (nessuno/qualcuno/pieno)","Prezzo ($/$$/$$$)","Pioggia (vero/falso)",
+        "Prenotazione (vero/falso)","Tipo","Attesa stimata","Valido per modello (vero/falso)"};
     bool okInputFile = false;
     //Inizializzazione Input file
     FILE* pFile = NULL;
@@ -626,55 +633,25 @@ int main()
         int numeroRiga = 0;
         while(numeroRiga < righeInput)
         {
-            //Variabili di input
-            char inputAlternativa[5];
-            char inputBar[5];
-            char inputGiorno[5];
-            char inputFame[5];
-            char inputAffollato[10];
-            char inputPrezzo[3];
-            char inputPioggia[3];
-            char inputPrenotazione[5];
-            char inputTipo[15];
-            char inputAttesa[6];
-            char inputValore[5];
+            printf("VALORI IPOTESI N:%d\n", numeroRiga + 1);
 
-            //Input ipotesi
-            printf("Alternativa: c e un ristorante nei paraggi (vero, falso)");
-            scanf(" %s", inputAlternativa);
-            printf("Bar: il ristorante ha un area bar per l attesa (vero, falso)");
-            scanf(" %s", inputBar);
-            printf("Giorno: giorno della settimana in cui si vuole andare al ristorante (vero se venerdi oppure sabato, falso diversamente)");
-            scanf(" %s", inputGiorno);
-            printf("Fame: siamo affamati (vero, falso)");
-            scanf(" %s", inputFame);
-            printf("Affollato: quante persone sono presenti nel ristorante (nessuno, qualcuno, pieno)");
-            scanf(" %s", inputAffollato);
-            printf("Prezzo: categoria di costo del ristorante ($, $$, $$$)");
-            scanf(" %s", inputPrezzo);
-            printf("Pioggia: fuori sta piovendo (vero, falso)");
-            scanf(" %s", inputPioggia);
-            printf("Prenotazione: abbiamo prenotato (vero, falso)");
-            scanf(" %s", inputPrenotazione);
-            printf("Tipo: tipo di ristorante (italiano, francese, fast-food, thai)");
-            scanf(" %s", inputTipo);
-            printf("Attesa stimata: stima del tempo di attesa (<10, 10-29, 30-60, >60)");
-            scanf(" %s", inputAttesa);
-            printf("Valore: questa ipotesi e considerata come buona? (vero, falso)");
-            scanf(" %s", inputValore);
-
-            dataset[numeroRiga][0] = inputAlternativa;
-            dataset[numeroRiga][1] = inputBar;
-            dataset[numeroRiga][2] = inputGiorno;
-            dataset[numeroRiga][3] = inputFame;
-            dataset[numeroRiga][4] = inputAffollato;
-            dataset[numeroRiga][5] = inputPrezzo;
-            dataset[numeroRiga][6] = inputPioggia;
-            dataset[numeroRiga][7] = inputPrenotazione;
-            dataset[numeroRiga][8] = inputTipo;
-            dataset[numeroRiga][9] = inputAttesa;
-            dataset[numeroRiga][10] = inputValore;
-
+            char* ipotesi;
+            bool okValore = false;
+            for(int i = 0; i < 11; i++)
+            {
+                while(!okValore)
+                {
+                    printf("Inserire il valore di %s: ", valori[i]);
+                    char str[25];
+                    scanf("%s", str);
+                    okValore = ControlloInput(str, i);
+                    int len = strlen(str);
+                    dataset[numeroRiga][i] = malloc(len* sizeof(char));
+                    strcpy(dataset[numeroRiga][i], str);
+                    printf("\n");   
+                    }
+                    okValore = false;
+            }
             numeroRiga++;
         }
     }
@@ -724,9 +701,6 @@ int main()
     {
         bool ok =false;
         bool ok2 = false;
-        char *valori[10] = {"Alternativa (vero/falso)","Bar (vero/falso)","Giorno (vero/falso)","Fame (vero/falso)",
-        "Affollato (nessuno/qualcuno/pieno)","Prezzo ($/$$/$$$)","Pioggia (vero/falso)",
-        "Prenotazione (vero/falso)","Tipo","Attesa stimata"};
         int valoriMalloc[10] = {5,5,5,5,8,3,5,5,9,5};
         char **ipotesi;
         //PER DEBUG
@@ -749,6 +723,7 @@ int main()
         while(!ok)
         {
             char useFile[5];
+            printf("IPOTESI DA TESTARE SUL MODELLO: ");
             printf("Usare valori in input o da file? (1/2)");
             scanf(" %s", useFile);
             //PER DEBUG
