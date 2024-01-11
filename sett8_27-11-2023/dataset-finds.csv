@@ -1,6 +1,6 @@
-vero,vero,vero,vero,pieno,$$,falso,vero,italiano,>60,falso
-vero,falso,vero,vero,qualcuno,$,falso,vero,francese,30-60,vero
-falso,vero,vero,falso,nessuno,$$$,vero,falso,fast-food,<10,vero
-vero,vero,falso,falso,qualcuno,$,falso,falso,thai,10-29,falso
-falso,falso,falso,vero,pieno,$$$,vero,vero,italiano,>60,falso
-vero,falso,falso,vero,nessuno,$$,falso,falso,fast-food,<10,vero
+1,1,1,1,2,1,0,1,0,3,1
+1,0,1,1,1,0,0,1,1,2,1
+0,1,1,0,0,2,1,0,2,0,1
+1,1,0,0,1,0,0,0,3,2,0
+0,0,0,1,2,2,1,1,0,3,0
+1,0,0,1,0,1,0,0,2,0,1
