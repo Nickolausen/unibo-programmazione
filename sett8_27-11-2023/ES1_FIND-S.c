@@ -126,7 +126,103 @@ InputMode getInputMode()
     return undefined;
 }
 
-HypothesisList retrieveData(InputMode mode) 
+Hypothesis* askForHypothesis(bool askForFlag) 
+{
+    Hypothesis* output = (Hypothesis*)malloc(sizeof(Hypothesis));
+    if (output == NULL) 
+    {
+        printf(ANSI_COLOR_RED "An error occurred: could not allocate %lu bytes of memory. Exiting..." ANSI_COLOR_RESET, sizeof(Hypothesis));
+        exit(1);
+    }
+
+    fflush(stdin);
+    printf("(1) C'è un alternativa a questo locale? [1=Yes/0=No] ");
+    scanf("%d", &(output->hasAlternative));
+    puts("");
+
+    fflush(stdin);
+    printf("(2) Questo locale ha un bar? [1=Yes/0=No] ");
+    scanf("%d", &(output->hasBar));
+    puts("");
+
+    fflush(stdin);
+    printf("(3) Vuoi andare o di venerdì o sabato? [1=Yes/0=Other days] ");
+    scanf("%d", &(output->onFriOrSat));
+    puts("");
+
+    fflush(stdin);
+    printf("(4) Sei affamato? [1=Yes/0=No] ");
+    scanf("%d", &(output->isHungry));
+    puts("");
+
+    fflush(stdin);
+    printf("(5) Il locale è molto affollato al momento? [0=nessuno/1=qualcuno/2=pieno] ");
+    scanf("%d", &(output->crowdStatus));
+    puts("");
+
+    fflush(stdin);
+    printf("(6) Il locale è molto costoso? [0=$/1=$$/2=$$$] ");
+    scanf("%d", &(output->expensiveness));
+    puts("");
+
+    fflush(stdin);
+    printf("(7) Fuori sta piovendo? [1=Yes/0=No] ");
+    scanf("%d", &(output->isRaining));
+    puts("");
+
+    fflush(stdin);
+    printf("(8) Hai effettuato la prenotazione? [1=Yes/0=No] ");
+    scanf("%d", &(output->hasReservation));
+    puts("");
+
+    fflush(stdin);
+    printf("(9) Di quale tipo di ristorante si tratta? [0=italiano/1=francese/2=fast-food/3=thai] ");
+    scanf("%d", &(output->isRaining));
+    puts("");
+
+    fflush(stdin);
+    printf("(10) Qual è l'attesa stimata per poter entrare? [0 = (t)<10min / 1 = 11min<(t)<30min / 2 = 31min<(t)<60min / 3 = (t)>61min] ");
+    scanf("%d", &(output->isRaining));
+    puts("");
+
+    if (askForFlag) 
+    {
+        fflush(stdin);
+        printf("(11) Devo prendere in considerazione quanto inserito? [1=Yes/0=No] ");
+        scanf("%d", &(output->considered));
+        puts("\n");
+    }
+
+    return output;
+}
+
+void saveToFile(Hypothesis* hypo, bool consider, char fileName[], char mode[]) 
+{
+    FILE* pFile = fopen(fileName, mode);
+    if (pFile == NULL)
+    {
+        printf(ANSI_COLOR_RED "An error occurred while opening '%s'. Exiting..." ANSI_COLOR_RESET, fileName);
+        exit(1);
+    }
+
+    fprintf(pFile, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", 
+        hypo->hasAlternative, // Alternativa
+        hypo->hasBar, // Bar
+        hypo->onFriOrSat, // Giorno
+        hypo->isHungry, // Fame
+        hypo->waiting, // Affollato
+        hypo->expensiveness, // Prezzo
+        hypo->isRaining, // Pioggia
+        hypo->hasReservation, // Prenotazione
+        hypo->type, // Tipo
+        hypo->waiting, // Attesa stimata
+        consider); // Da considerare;
+
+    fclose(pFile);
+    return;
+}
+
+HypothesisList retrieveData(InputMode mode, char datasetFileNameOutput[MAX_STR_LEN]) 
 {
     HypothesisList output = {NULL, 0};
     Hypothesis* outputVect = (Hypothesis*)malloc(sizeof(Hypothesis) * MAX_LEN);
@@ -136,6 +232,8 @@ HypothesisList retrieveData(InputMode mode)
         printf(ANSI_COLOR_RED "An error occurred while allocating %lu bytes of memory. Exiting..." ANSI_COLOR_RESET, sizeof(Hypothesis) * MAX_LEN);
         exit(1);
     }
+
+    char fileName[MAX_STR_LEN];
 
     switch (mode)
     {
@@ -149,60 +247,7 @@ HypothesisList retrieveData(InputMode mode)
                 output.size++;
                 printf("## Iterazione: %d\n\n", vectorIndex + 1);
 
-                fflush(stdin);
-                printf("(1) C'è un alternativa a questo locale? [1=Yes/0=No] ");
-                scanf("%d", &(outputVect[vectorIndex].hasAlternative));
-                puts("");
-
-                fflush(stdin);
-                printf("(2) Questo locale ha un bar? [1=Yes/0=No] ");
-                scanf("%d", &(outputVect[vectorIndex].hasBar));
-                puts("");
-
-                fflush(stdin);
-                printf("(3) Vuoi andare o di venerdì o sabato? [1=Yes/0=Other days] ");
-                scanf("%d", &(outputVect[vectorIndex].onFriOrSat));
-                puts("");
-
-                fflush(stdin);
-                printf("(4) Sei affamato? [1=Yes/0=No] ");
-                scanf("%d", &(outputVect[vectorIndex].isHungry));
-                puts("");
-
-                fflush(stdin);
-                printf("(5) Il locale è molto affollato al momento? [0=nessuno/1=qualcuno/2=pieno] ");
-                scanf("%d", &(outputVect[vectorIndex].crowdStatus));
-                puts("");
-
-                fflush(stdin);
-                printf("(6) Il locale è molto costoso? [0=$/1=$$/2=$$$] ");
-                scanf("%d", &(outputVect[vectorIndex].expensiveness));
-                puts("");
-
-                fflush(stdin);
-                printf("(7) Fuori sta piovendo? [1=Yes/0=No] ");
-                scanf("%d", &(outputVect[vectorIndex].isRaining));
-                puts("");
-
-                fflush(stdin);
-                printf("(8) Hai effettuato la prenotazione? [1=Yes/0=No] ");
-                scanf("%d", &(outputVect[vectorIndex].hasReservation));
-                puts("");
-
-                fflush(stdin);
-                printf("(9) Di quale tipo di ristorante si tratta? [0=italiano/1=francese/2=fast-food/3=thai] ");
-                scanf("%d", &(outputVect[vectorIndex].isRaining));
-                puts("");
-
-                fflush(stdin);
-                printf("(10) Qual è l'attesa stimata per poter entrare? [0 = (t)<10min / 1 = 11min<(t)<30min / 2 = 31min<(t)<60min / 3 = (t)>61min] ");
-                scanf("%d", &(outputVect[vectorIndex].isRaining));
-                puts("");
-
-                fflush(stdin);
-                printf("(11) Qual è l'attesa stimata per poter entrare? [1=Yes/0=No] ");
-                scanf("%d", &(outputVect[vectorIndex].considered));
-                puts("\n");
+                outputVect[vectorIndex] = *askForHypothesis(true);
 
                 fflush(stdin);
                 printf("Would you like to keep prompting other data? [Y=Yes/Any char=No] ");
@@ -215,12 +260,20 @@ HypothesisList retrieveData(InputMode mode)
                 }
                 
             } while (keepGoing);
+
+            strcpy(fileName, "dataset_console.csv");
+
+            for (vectorIndex = 0; vectorIndex < output.size; vectorIndex++)
+            {
+                saveToFile(&outputVect[vectorIndex], outputVect[vectorIndex].considered, fileName, "w");
+            }
+
             break;
         }
 
         case fromFile:
         {
-            char fileName[] = "dataset-finds.csv";
+            strcpy(fileName, "dataset-finds.csv");
             FILE *pFile;
             char answer;
 
@@ -263,6 +316,7 @@ HypothesisList retrieveData(InputMode mode)
                         fclose(pFile);
 
                         strcpy(fileName, inputFileName);
+                        break;
                     }
                     default:
                     {
@@ -315,6 +369,7 @@ HypothesisList retrieveData(InputMode mode)
     }
 
     output.data = outputVect;
+    strcpy(datasetFileNameOutput, fileName);
 
     return output;
 }
@@ -357,77 +412,127 @@ void printComparison(Hypothesis* current, int index, Hypothesis* general)
     SLEEP(1);
 }
 
-bool Aspettiamo(HypothesisList* hypos) 
+bool Aspettiamo(Hypothesis* general_hypothesis, Hypothesis* promptedHypothesis) 
+{   
+    bool isGeneral = (general_hypothesis->hasAlternative == general || general_hypothesis->hasAlternative == promptedHypothesis->hasAlternative) &&
+        (general_hypothesis->hasBar == general || general_hypothesis->hasBar == promptedHypothesis->hasBar) &&
+        (general_hypothesis->onFriOrSat == general || general_hypothesis->onFriOrSat == promptedHypothesis->onFriOrSat) &&
+        (general_hypothesis->isHungry == general || general_hypothesis->isHungry == promptedHypothesis->isHungry) &&
+        (general_hypothesis->crowdStatus == generalStatus || general_hypothesis->crowdStatus == promptedHypothesis->crowdStatus) &&
+        (general_hypothesis->expensiveness == generalPrice || general_hypothesis->expensiveness == promptedHypothesis->expensiveness) &&
+        (general_hypothesis->isRaining == general || general_hypothesis->isRaining == promptedHypothesis->isRaining) &&
+        (general_hypothesis->type == generalType || general_hypothesis->type == promptedHypothesis->type) &&
+        (general_hypothesis->waiting == generalWaiting || general_hypothesis->waiting == promptedHypothesis->waiting);
+
+    return isGeneral;
+}
+
+Hypothesis* generateGeneralHypothesis(HypothesisList* hypos) 
 {
-    Hypothesis general_hypothesis;
+    Hypothesis* general_hypothesis = (Hypothesis*)malloc(sizeof(Hypothesis));
 
     bool firstHypothesis = true;
     for (int i = 0; i < hypos->size; i++)
-
     {
         CLEAR_CONSOLE;
         
         if (hypos->data[i].considered && firstHypothesis) 
         {
             firstHypothesis = false;
-            general_hypothesis.hasAlternative = hypos->data[i].hasAlternative;
-            general_hypothesis.hasBar = hypos->data[i].hasBar;
-            general_hypothesis.onFriOrSat = hypos->data[i].onFriOrSat;
-            general_hypothesis.isHungry = hypos->data[i].isHungry;
-            general_hypothesis.crowdStatus = hypos->data[i].crowdStatus;
-            general_hypothesis.expensiveness = hypos->data[i].expensiveness;
-            general_hypothesis.isRaining = hypos->data[i].isRaining;
-            general_hypothesis.hasReservation = hypos->data[i].hasReservation;
-            general_hypothesis.type = hypos->data[i].type;
-            general_hypothesis.waiting = hypos->data[i].waiting;
+            general_hypothesis->hasAlternative = hypos->data[i].hasAlternative;
+            general_hypothesis->hasBar = hypos->data[i].hasBar;
+            general_hypothesis->onFriOrSat = hypos->data[i].onFriOrSat;
+            general_hypothesis->isHungry = hypos->data[i].isHungry;
+            general_hypothesis->crowdStatus = hypos->data[i].crowdStatus;
+            general_hypothesis->expensiveness = hypos->data[i].expensiveness;
+            general_hypothesis->isRaining = hypos->data[i].isRaining;
+            general_hypothesis->hasReservation = hypos->data[i].hasReservation;
+            general_hypothesis->type = hypos->data[i].type;
+            general_hypothesis->waiting = hypos->data[i].waiting;
         }
         else if (hypos->data[i].considered) 
         {
-            if (general_hypothesis.hasAlternative != hypos->data[i].hasAlternative)
-                general_hypothesis.hasAlternative = general;
+            if (general_hypothesis->hasAlternative != hypos->data[i].hasAlternative)
+                general_hypothesis->hasAlternative = general;
             
-            if (general_hypothesis.hasBar != hypos->data[i].hasBar)
-                general_hypothesis.hasBar = general;
+            if (general_hypothesis->hasBar != hypos->data[i].hasBar)
+                general_hypothesis->hasBar = general;
 
-            if (general_hypothesis.onFriOrSat != hypos->data[i].onFriOrSat)
-                general_hypothesis.onFriOrSat = general;
+            if (general_hypothesis->onFriOrSat != hypos->data[i].onFriOrSat)
+                general_hypothesis->onFriOrSat = general;
             
-            if (general_hypothesis.isHungry != hypos->data[i].isHungry)
-                general_hypothesis.isHungry = general;
+            if (general_hypothesis->isHungry != hypos->data[i].isHungry)
+                general_hypothesis->isHungry = general;
 
-            if (general_hypothesis.crowdStatus != hypos->data[i].crowdStatus)
-                general_hypothesis.crowdStatus = generalStatus;
+            if (general_hypothesis->crowdStatus != hypos->data[i].crowdStatus)
+                general_hypothesis->crowdStatus = generalStatus;
 
-            if (general_hypothesis.expensiveness != hypos->data[i].expensiveness)
-                general_hypothesis.expensiveness = generalPrice;
+            if (general_hypothesis->expensiveness != hypos->data[i].expensiveness)
+                general_hypothesis->expensiveness = generalPrice;
 
-            if (general_hypothesis.isRaining != hypos->data[i].isRaining)
-                general_hypothesis.isRaining = general;
+            if (general_hypothesis->isRaining != hypos->data[i].isRaining)
+                general_hypothesis->isRaining = general;
 
-            if (general_hypothesis.hasReservation != hypos->data[i].hasReservation)
-                general_hypothesis.hasReservation = general;
+            if (general_hypothesis->hasReservation != hypos->data[i].hasReservation)
+                general_hypothesis->hasReservation = general;
 
-            if (general_hypothesis.type != hypos->data[i].type)
-                general_hypothesis.type = generalType;
+            if (general_hypothesis->type != hypos->data[i].type)
+                general_hypothesis->type = generalType;
 
-            if (general_hypothesis.waiting != hypos->data[i].waiting)
-                general_hypothesis.waiting = generalWaiting;
+            if (general_hypothesis->waiting != hypos->data[i].waiting)
+                general_hypothesis->waiting = generalWaiting;
         }
 
-        printComparison(&(hypos->data[i]), i, &general_hypothesis);
+        printComparison(&(hypos->data[i]), i, general_hypothesis);
     }
-    
-    return false;
+
+    return general_hypothesis;
 }
 
 int main() 
 {
     CLEAR_CONSOLE;
     printf(ANSI_COLOR_BLUE "- Welcome to Find-S Algorithm -\n" ANSI_COLOR_RESET);
-    
+    char fileName[MAX_STR_LEN];
     InputMode mode = getInputMode();
-    HypothesisList data = retrieveData(mode);
-    bool aspetta = Aspettiamo(&data);
+    HypothesisList data = retrieveData(mode, fileName);
+
+    Hypothesis* generalHypothesis = generateGeneralHypothesis(&data);
+
+    bool keepGoing = true;
+
+    do 
+    {
+        CLEAR_CONSOLE;
+        printf("Prompt your hypothesis: \n");
+        Hypothesis* promptedHypothesis = askForHypothesis(false);
+        bool shouldWait = Aspettiamo(generalHypothesis, promptedHypothesis);
+        printComparison(promptedHypothesis, 0, generalHypothesis);
+
+        printf("-- You %s. ", (shouldWait ? ANSI_COLOR_BLUE"should wait"ANSI_COLOR_RESET : ANSI_COLOR_YELLOW"should not wait"ANSI_COLOR_RESET));
+        printf("Is this supposition right? [Y=Yes/Any char=No] ");
+        fflush(stdin);
+        bool isRight = toupper(getchar()) == 'Y';
+
+        printf("Do you want to save current result to dataset '%s'? [Y=Yes/Any char=No] ", fileName);
+        fflush(stdin);
+        bool save = toupper(getchar()) == 'Y';
+        if (save)
+        {
+            if (isRight) saveToFile(promptedHypothesis, isRight, fileName, "a");
+            else saveToFile(promptedHypothesis, !isRight, fileName, "a");
+        }
+
+        puts("");
+
+        printf("Would you like to keep going? [Y=Yes/Any char=No] ");
+        fflush(stdin);
+        keepGoing = toupper(getchar()) == 'Y';
+        if (keepGoing)
+            CLEAR_CONSOLE;
+        puts("");
+        
+    } while (keepGoing);
     
     return 0;
 }
