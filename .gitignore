@@ -73,5 +73,5 @@ output/
 
 # Other
 py
-.zip
+*.zip
 *.bat
