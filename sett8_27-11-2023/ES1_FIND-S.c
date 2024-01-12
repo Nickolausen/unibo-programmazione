@@ -98,7 +98,7 @@ typedef enum {
 InputMode getInputMode() 
 {
     char chosenInput;
-
+    
     do 
     {
         fflush(stdin);
@@ -325,21 +325,21 @@ void printComparison(Hypothesis* current, int index, Hypothesis* general)
     char *price_tag_possibilities[] = {"$", "$$", "$$$", "-"};
     char *restaurant_type_possibilities[] = {"italiano", "francese", "fast-food", "thai", "-"};
     char *estimated_waiting_possibilities[] = {"<10", "10-29", "30-60", ">60", "-"};
-    char *qbit_possibilities[] = {"no","sì", "-"};
+    char *qbit_possibilities[] = {"no","yes", "-"};
 
     printf("Comparison between:\n\n");
     printf("> Hypothesis nr. %d\n", index + 1);
     printf("{%s,%s,%s,%s,%s,%s,%s,%s,%s,%s}\n\n", 
-        qbit_possibilities[current[index].hasAlternative],
-        qbit_possibilities[current[index].hasBar],
-        qbit_possibilities[current[index].onFriOrSat],
-        qbit_possibilities[current[index].isHungry],
-        crowd_status_possibilities[current[index].crowdStatus],
-        price_tag_possibilities[current[index].expensiveness],
-        qbit_possibilities[current[index].isRaining],
-        qbit_possibilities[current[index].hasReservation],
-        restaurant_type_possibilities[current[index].type],
-        estimated_waiting_possibilities[current[index].waiting]);
+        qbit_possibilities[current->hasAlternative],
+        qbit_possibilities[current->hasBar],
+        qbit_possibilities[current->onFriOrSat],
+        qbit_possibilities[current->isHungry],
+        crowd_status_possibilities[current->crowdStatus],
+        price_tag_possibilities[current->expensiveness],
+        qbit_possibilities[current->isRaining],
+        qbit_possibilities[current->hasReservation],
+        restaurant_type_possibilities[current->type],
+        estimated_waiting_possibilities[current->waiting]);
 
     printf("> General hypothesis:\n");
     printf("{%s,%s,%s,%s,%s,%s,%s,%s,%s,%s}\n\n", 
@@ -363,6 +363,7 @@ bool Aspettiamo(HypothesisList* hypos)
 
     bool firstHypothesis = true;
     for (int i = 0; i < hypos->size; i++)
+
     {
         CLEAR_CONSOLE;
         
@@ -413,7 +414,7 @@ bool Aspettiamo(HypothesisList* hypos)
                 general_hypothesis.waiting = generalWaiting;
         }
 
-        printComparison(hypos->data, i, &general_hypothesis);
+        printComparison(&(hypos->data[i]), i, &general_hypothesis);
     }
     
     return false;
