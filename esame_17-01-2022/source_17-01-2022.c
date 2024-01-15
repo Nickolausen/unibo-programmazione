@@ -17,6 +17,15 @@ typedef struct Esame {
   char esito[5];
 } Esame;
 
+/*
+ * La linked list tradizionale prevede una struct del tipo:
+ * struct Nodo 
+ * {
+ *    Studente *data;
+ *    struct Nodo *next;
+ * };
+ * - per accorciare e semplificare il lavoro, ho incorporato il *next nella struct Studente;
+ */
 typedef struct Studente{
   int matricola;
   char nome_e_cognome[100];
@@ -45,12 +54,21 @@ typedef struct  {
 
 void sort_by_ascending(ListPianoStudi **list) 
 {
+  /*
+   * Se il vettore contiene un solo elemento (quindi lastIndex == 0)
+   * allora non ordino il vettore
+   */
   if ((*list)->lastIndex < 1) return;
 
   bool swapping = true;
   while (swapping) 
   {
+    /*
+     * Imposto swapping a false; se cambia valore nel codice successivo,
+     * vuol dire che il vettore non è ancora ordinato
+     */
     swapping = false;
+    
     for (int i = 0; i < (*list)->lastIndex; i++) 
     {
       PianoStudiStudente swapElement;
@@ -125,7 +143,6 @@ Studente* leggi_carriera(char fileName[])
 
     stud->nrEsami = 0;
     char tmpNome[100], tmpCognome[100];
-
 
     fscanf(pFile, "%d %s %s", 
       &(stud->matricola),
@@ -242,15 +259,28 @@ Statistiche statistiche_esame(Studente *list, char id_esame[16])
 int main() 
 {
   CLEAR_CONSOLE;
+  
+  /*
+   * Generazione vettore dinamico 'piano_di_studi'; vettore implementato 
+   * attraverso una lista che mi mantenga anche la lunghezza del vettore (size) e l'indice
+   * dell'ultimo elemento presente nel vettore (lastIndex)
+   */
   ListPianoStudi* piano_di_studi = (ListPianoStudi*)malloc(sizeof(ListPianoStudi));
   piano_di_studi->data = (PianoStudiStudente*)malloc(sizeof(PianoStudiStudente) * SIZE);
   piano_di_studi->size = SIZE;
+  /*
+   * Inserisco -1 come valore simbolico dell'ultimo elemento presente - poiché il vettore
+   * è vuoto
+   */
   piano_di_studi->lastIndex = -1;
   PianoStudiStudente stud_2 = {1, {"GAL", "Analisi I", "Fisica"}};
   PianoStudiStudente stud_1 = {2, {"Programmazione", "OOP", "Programmazione di Reti"}};
   aggiungi_elemento(&piano_di_studi, &stud_2);
   aggiungi_elemento(&piano_di_studi, &stud_1);
 
+  /*
+   * Stampo il vettore 'piano_di_studi'
+   */
   for (int i = 0; i <= piano_di_studi->lastIndex; i++) 
   {
     printf("[%d] Matricola: #%d\n", i, piano_di_studi->data[i].matricola);
