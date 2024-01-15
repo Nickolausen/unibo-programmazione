@@ -192,11 +192,12 @@ bool inserisci_nuove_lezioni(Studente *list, ListNuoveLezioni *nuove_lezioni, in
 
         bool lezioneInserita = false;
         Lezione* lezioni = stud_interessato->lezioni;
-        for (int j = 0; j < stud_interessato->nrLezioni; j++)
+        for (int j = 0; j < stud_interessato->nrLezioni && !lezioneInserita; j++)
         {
             int durata_intermezzo = lezioni[j + 1].ora_inizio - lezioni[j].ora_inizio;
             if (nuove_lezioni->data[j].durata <= durata_intermezzo) 
             {
+                /* Manca implementazione logica */
                 lezioneInserita = true;
             }
         }
@@ -205,11 +206,11 @@ bool inserisci_nuove_lezioni(Studente *list, ListNuoveLezioni *nuove_lezioni, in
         {
             nr_lezioni_non_aggiunte++;
             allInserted = false;
-            
+
             int *current_size = &(nuove_lezioni_non_aggiunte->size);
-            current_size++;
+            (*current_size)++;
             nuove_lezioni_non_aggiunte->data =
-                    (NuovaLezione*)realloc( (NuovaLezione*)nuove_lezioni_non_aggiunte->data, (unsigned long)current_size * sizeof(NuovaLezione));
+                    (NuovaLezione*)realloc( (NuovaLezione*)nuove_lezioni_non_aggiunte->data, (*current_size) * sizeof(NuovaLezione));
 
             if (nuove_lezioni_non_aggiunte->data == NULL)
             {
