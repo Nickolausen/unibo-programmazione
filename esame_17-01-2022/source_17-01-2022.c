@@ -101,6 +101,9 @@ Studente* leggi_carriera(char fileName[])
     return NULL;
   }
 
+  /*
+   * Preparo la testa della linked list che manderò in output.
+   */
   Studente* out_list = (Studente*)malloc(sizeof(Studente));
   if (out_list == NULL) 
   {
@@ -108,13 +111,21 @@ Studente* leggi_carriera(char fileName[])
     return NULL;
   }
 
+  /*
+   * Il ciclo continua finché il cursore in lettura del file non raggiunge
+   * la fine del file
+   */
   while(!feof(pFile)) 
   {
+    /*
+     * Preparo il nodo che andrà inserito in testa alla linked list
+     */
     Studente *stud = (Studente*)malloc(sizeof(Studente));
     if (stud == NULL) return NULL;
 
     stud->nrEsami = 0;
     char tmpNome[100], tmpCognome[100];
+
 
     fscanf(pFile, "%d %s %s", 
       &(stud->matricola),
@@ -147,17 +158,6 @@ Studente* leggi_carriera(char fileName[])
       stud->nrEsami++;
     }
 
-    // printf("Studente %s, Matricola: %d\n", stud->nome_e_cognome, stud->matricola);
-    // printf("Esami sostenuti:\n");
-
-    // for (int i = 0; i < idxEsame; i++) 
-    // {
-    //   printf("\t> Codice #%s; Esito: %s\n", stud->sequenza_esami[i].id_esame, stud->sequenza_esami[i].esito);
-    // }
-
-    // puts("");
-
-
     if (!head_insert(&out_list, &stud)) 
     {
       printf("Inserimento non avvenuto.");
@@ -167,28 +167,50 @@ Studente* leggi_carriera(char fileName[])
   return out_list;
 }
 
-void pulisci_lista(Studente **node, int matricola) 
+/*
+  TO FIX: La rimozione del nodo interessato
+  taglia il collegamento con i nodi successivi.
+*/
+void pulisci_lista(Studente **current, Studente **prev, int matricola) 
 {
-  if (*node == NULL) return;
+  if (*prev == NULL) return;
 
-  if ((*node)->matricola == matricola) 
+  printf("%d == %d\n", (*current)->matricola, matricola);
+  if ((*current)->matricola == matricola) 
   {
-
+    (*prev)->next = (*current)->next;
+    free(*current);
+    return;
   }
+
+  pulisci_lista(&(*current)->next, &(*current), matricola);
 }
 
-Statistiche statistiche_esame(Studente **list, char id_esame[16])
+Statistiche statistiche_esame(Studente *list, char id_esame[16])
 {
+  /*
+   * Poiché la funzione richiede l'output di più variabili,
+   * ritengo una possibile soluzione organizzarle in una struct
+   */
   Statistiche output_stats = {0,0,0};
 
-  Studente *node = *list;
+  Studente *node = list;
   int nrStudentiEsame = 0, nrPromossi = 0, nrLode = 0;
   while (node != NULL) 
   {
     bool found = false;
     int idxEsame = 0;
+    
+    /*
+     * Scorro tutti gli esami di ogni singolo studente - mi fermo quando
+     * ho trovato l'esame interessato oppure, qualora non fosse presente nella carriera dello studente,
+     * quando ho finito di scorrere tutti gli esami quivi presenti
+     */
     while (!found && idxEsame < (*node).nrEsami) 
     {
+      /*
+       * Se eseguo il codice nell'if, allora ho trovato l'esame che stavo cercando
+       */
       if (strcmp(node->sequenza_esami[idxEsame].id_esame, id_esame) == 0) 
       {
         found = true;
@@ -244,11 +266,21 @@ int main()
   }
 
   Studente *list = leggi_carriera("./carriera.txt");
-  Statistiche stats = statistiche_esame(&list, "INF120");
+  Statistiche stats = statistiche_esame(list, "INF120");
 
   printf("Esame %s:\n", "INF120");
   printf("\t> Ritirati: %d\n", stats.nr_ritirati);
   printf("\t> Percentuale lode: %.2f%%\n", stats.perc_lode);
   printf("\t> Percentuale promossi: %.2f%%\n", stats.perc_promossi);
+
+  pulisci_lista(&(list->next), &list, 123);
+
+  Studente* current_node = list;
+  while (current_node != NULL) 
+  {
+    printf("Matricola: %d\n", current_node->matricola);
+    current_node = current_node->next;
+  }
+
   return 0;
 }
