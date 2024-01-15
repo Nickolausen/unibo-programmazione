@@ -100,12 +100,12 @@ void aggiungi_elemento(ListPianoStudi **piano_di_studi, PianoStudiStudente *elem
 /*
  * Funzione per inserire un nodo in testa alla linked list
  */
-bool head_insert(Studente **list, Studente **node) 
+bool head_insert(Studente **list, Studente *node) 
 {
-  if (list == NULL || node == NULL) return false;
+  if (node == NULL) return false;
   
-  (*node)->next = *list;
-  *list = *node;
+  (node)->next = *list;
+  *list = node;
 
   return true;
 }
@@ -122,12 +122,7 @@ Studente* leggi_carriera(char fileName[])
   /*
    * Preparo la testa della linked list che manderò in output.
    */
-  Studente* out_list = (Studente*)malloc(sizeof(Studente));
-  if (out_list == NULL) 
-  {
-    printf("Unable to allocate memory. Exiting...");
-    return NULL;
-  }
+  Studente* out_list = NULL;
 
   /*
    * Il ciclo continua finché il cursore in lettura del file non raggiunge
@@ -144,6 +139,7 @@ Studente* leggi_carriera(char fileName[])
     stud->nrEsami = 0;
     char tmpNome[100], tmpCognome[100];
 
+    stud->matricola = -1;
     fscanf(pFile, "%d %s %s", 
       &(stud->matricola),
       tmpNome,
@@ -175,7 +171,7 @@ Studente* leggi_carriera(char fileName[])
       stud->nrEsami++;
     }
 
-    if (!head_insert(&out_list, &stud)) 
+    if (!head_insert(&out_list, stud)) 
     {
       printf("Inserimento non avvenuto.");
     }
@@ -188,19 +184,27 @@ Studente* leggi_carriera(char fileName[])
   TO FIX: La rimozione del nodo interessato
   taglia il collegamento con i nodi successivi.
 */
-void pulisci_lista(Studente **current, Studente **prev, int matricola) 
+void pulisci_lista(Studente **lista, Studente *prev, int matricola) 
 {
-  if (*prev == NULL) return;
+  Studente *current = *lista;
+  if (current == NULL) return;
 
-  printf("%d == %d\n", (*current)->matricola, matricola);
-  if ((*current)->matricola == matricola) 
+  if (current->matricola == matricola) 
   {
-    (*prev)->next = (*current)->next;
-    free(*current);
+    if (prev == NULL) 
+    {
+      *lista = current->next;
+    }
+    else 
+    {
+      prev->next = current->next;
+    }
+
+    free(current);
     return;
   }
 
-  pulisci_lista(&(*current)->next, &(*current), matricola);
+  pulisci_lista(&(current->next), current, matricola);
 }
 
 Statistiche statistiche_esame(Studente *list, char id_esame[16])
@@ -303,9 +307,16 @@ int main()
   printf("\t> Percentuale lode: %.2f%%\n", stats.perc_lode);
   printf("\t> Percentuale promossi: %.2f%%\n", stats.perc_promossi);
 
-  pulisci_lista(&(list->next), &list, 123);
-
   Studente* current_node = list;
+  while (current_node != NULL) 
+  {
+    printf("Matricola: %d\n", current_node->matricola);
+    current_node = current_node->next;
+  }
+  
+  pulisci_lista(&(list), NULL, 123);
+
+  current_node = list;
   while (current_node != NULL) 
   {
     printf("Matricola: %d\n", current_node->matricola);
