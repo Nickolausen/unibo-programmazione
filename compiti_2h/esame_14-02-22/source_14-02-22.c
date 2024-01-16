@@ -29,10 +29,10 @@ typedef struct singolo_turno *lista_turni;
 
 typedef struct esubero_reparto {
     char reparto[5 + 1];
-    lista_turni *turni;
+    lista_turni *turni[NR_TURNI];
 } esubero_reparto;
 
-void aggiungi_elemento(list_medico **list, medico *elem) 
+void aggiungi_medico(list_medico **list, medico *elem) 
 {
     int firstAvailableIndex = (*list)->lastIndex + 1;
 
@@ -62,6 +62,11 @@ void head_insert(singolo_turno **list, singolo_turno *node)
     *list = node;
 }
 
+void aggiungi_esubero(esubero_reparto **lista_esuberi, esubero_reparto *esubero) 
+{
+
+}
+
 void leggi_appuntamenti(char fileName[], list_medico **output) 
 {
     FILE *pFile = fopen(fileName, "r");
@@ -79,6 +84,9 @@ void leggi_appuntamenti(char fileName[], list_medico **output)
 
     strcpy(repartiMedici[21], "OCL");
     strcpy(repartiMedici[34], "ORT");
+
+    esubero_reparto *esuberi = (esubero_reparto *)malloc(sizeof(esubero_reparto));
+    if (esuberi == NULL) return;
 
     /* Continua finché il cursore in lettura del file non raggiunge la fine del file */
     while (!feof(pFile)) 
@@ -105,9 +113,10 @@ void leggi_appuntamenti(char fileName[], list_medico **output)
             strcpy(med.id_medico, id_medico);
             strcpy(med.reparto, repartiMedici[idxReparto]);
 
-            aggiungi_elemento(output, &med);
+            aggiungi_medico(output, &med);
             idxMedico = (*output)->lastIndex;
         }
+
         singolo_turno *pTurno = (*output)->data[idxMedico].turni[to_index(giorno_richiesto)];
         
         int countTurno = 0;
@@ -132,9 +141,14 @@ void leggi_appuntamenti(char fileName[], list_medico **output)
             head_insert(&pTurno, turno);
         }
 
+        /* Se il turno individuato può contenere ulteriori pazienti, inserisco il paziente in coda */
         if (pTurno->pazienti_per_turno < 5) 
         {
             pTurno->pazienti_per_turno++;
+        }
+        else /* altrimenti aggiungo il paziente alla lista degli esuberi */
+        {
+            // da finire
         }
     }
 }
