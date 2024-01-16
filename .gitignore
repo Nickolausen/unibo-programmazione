@@ -76,3 +76,4 @@ py
 *.zip
 *.bat
 .idea
+*.exe
