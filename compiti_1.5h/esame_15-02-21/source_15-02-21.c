@@ -39,37 +39,39 @@ typedef struct paziente {
     struct paziente *next;
 } paziente;
 
-void sort_by_ascending(list_tariffa **vect) 
+void sort_by_ascending(list_tariffa *vect) 
 {
     bool swapping = true;
     while (swapping) 
     {
         swapping = false;
-        for (int i = 0; i <= (*vect)->lastIndex; i++) 
+        for (int i = 0; i <= vect->lastIndex; i++) 
         {
             tariffa swapEl;
-            if ((*vect)->data[i].id_medico > (*vect)->data[i + 1].id_medico) 
+            if (vect->data[i].id_medico > vect->data[i + 1].id_medico) 
             {
                 swapping = true;
-                swapEl = (*vect)->data[i];
-                (*vect)->data[i] = (*vect)->data[i + 1];
-                (*vect)->data[i + 1] = swapEl;
+                swapEl = vect->data[i];
+                vect->data[i] = vect->data[i + 1];
+                vect->data[i + 1] = swapEl;
             }
         }
     }
 }
 
-void aggiungi_tariffa(list_tariffa **vect, tariffa *el) 
+void aggiungi_tariffa(list_tariffa *vect, tariffa el) 
 {
-    int firstAvailableIndex = (*vect)->lastIndex + 1;
-    int currentCount = (*vect)->count;
-    if (firstAvailableIndex >= currentCount) {
-        (*vect)->data = (tariffa *)realloc((*vect)->data, ((*vect)->count + 1) * sizeof(tariffa));
-        (*vect)->count = currentCount + 1;
+    int currentCount = vect->count;
+    vect->data = (tariffa *)realloc((tariffa *)vect->data, (currentCount + 1) * sizeof(tariffa));
+    if (vect->data == NULL) {
+        printf("An error occurred. Exiting...");
+        exit(EXIT_FAILURE);
     }
 
-    (*vect)->data[firstAvailableIndex] = *el;   
-    (*vect)->lastIndex++;
+    vect->count++;
+    vect->lastIndex = vect->count - 1;
+
+    vect->data[vect->lastIndex] = el;   
 
     /* Ordino il vettore in base al campo 'id_medico' - crescente */
     sort_by_ascending(vect);
@@ -80,7 +82,7 @@ void aggiungi_appuntamento(list_appuntamento **vect, appuntamento *el)
     int firstAvailableIndex = (*vect)->lastIndex + 1;
     int currentCount = (*vect)->count;
     if (firstAvailableIndex >= currentCount) {
-        (*vect)->data = (appuntamento *)realloc((*vect)->data, ((*vect)->count + 1) * sizeof(appuntamento));
+        (*vect)->data = (appuntamento *)realloc((*vect)->data, (currentCount + 1) * sizeof(appuntamento));
         (*vect)->count = currentCount + 1;
     }
 
@@ -125,12 +127,12 @@ paziente *leggi_appuntamenti(char *fileName)
         char tmpNome[100 + 1], tmpCognome[100 + 1];
         float preventivo;
 
-        fscanf(pFile, "%d %d %s %s %d", 
+        fscanf(pFile, "%d %d %s %s %f", 
             &id_paziente, 
             &id_medico, 
             tmpNome, 
             tmpCognome, 
-            preventivo);
+            &preventivo);
 
         paziente *p = get_paziente_by_id(&out_list, id_paziente); /* Cerco il paziente nella mia lista */
         if (p == NULL) 
@@ -161,7 +163,7 @@ paziente *leggi_appuntamenti(char *fileName)
             appuntamento *ap = (appuntamento *)malloc(sizeof(appuntamento));
             if (ap == NULL) return NULL;
 
-            fscanf(pFile, "%d %d", ap->ora_inizio, ap->ora_fine);
+            fscanf(pFile, "%d %d", &ap->ora_inizio, &ap->ora_fine);
             aggiungi_appuntamento(&p->appuntamenti, ap);
         }
 
@@ -171,40 +173,40 @@ paziente *leggi_appuntamenti(char *fileName)
     return out_list;
 }
 
-paziente *duplica_pazienti(paziente **list) 
+paziente *duplica_pazienti(paziente *list) 
 {
     paziente *duplicate = NULL;
-    if (*list == NULL) return duplicate;
+    if (list == NULL) return duplicate;
 
-    head_insert(&duplicate, (*list));
+    head_insert(&duplicate, list);
 
     return duplica_pazienti(&duplicate);
 }
 
-tariffa *get_tariffa_by_id(list_tariffa **tariffe, int id_medico) 
+tariffa *get_tariffa_by_id(list_tariffa *tariffe, int id_medico) 
 {
     tariffa *output = NULL;
     /* Cerco il medico all'interno della lista tariffe */
-    for (int i = 0; i <= (*tariffe)->lastIndex; i++) 
+    for (int i = 0; i <= tariffe->lastIndex; i++) 
     {
         /* Se lo trovo, me lo salvo */
-        if ((*tariffe)->data[i].id_medico == id_medico) 
+        if (tariffe->data[i].id_medico == id_medico) 
         {
-            output = &(*tariffe)->data[i];
+            output = &tariffe->data[i];
         }
     }
 
     /* Se non l'ho trovato in lista, allora creo una nuova tariffa standard di 80euro/ora */
     if (output == NULL) 
     {
-        output = &(tariffa){id_medico, 80};
-        aggiungi_tariffa(tariffe, output);
+        aggiungi_tariffa(tariffe, (tariffa){id_medico, 80});
+        output = &(tariffe->data[tariffe->lastIndex]);
     }
 
     return output;
 }
 
-void calcola_preventivi(paziente **list, list_tariffa **tariffe)  
+void calcola_preventivi(paziente **list, list_tariffa *tariffe)  
 {
     paziente *current_node = *list;
     while (current_node != NULL) 
@@ -238,14 +240,13 @@ int main()
     list_tariffa *tariffe = (list_tariffa *)malloc(sizeof(list_tariffa));
     if (tariffe == NULL) exit(EXIT_FAILURE);
 
-    tariffe->data = (tariffa *)malloc(sizeof(tariffa) * MAX_DENTISTI);
-    if (tariffe->data == NULL) exit(EXIT_FAILURE);
+    tariffe->data = NULL;
     tariffe->lastIndex = -1;
-    tariffe->count = MAX_DENTISTI;
+    tariffe->count = 0;
 
-    aggiungi_tariffa(&tariffe, &(tariffa){6784, 50});
-    aggiungi_tariffa(&tariffe, &(tariffa){2351, 75});
-    aggiungi_tariffa(&tariffe, &(tariffa){5568, 40});
+    aggiungi_tariffa(tariffe, (tariffa){6784, 50});
+    aggiungi_tariffa(tariffe, (tariffa){2351, 75});
+    aggiungi_tariffa(tariffe, (tariffa){5568, 40});
 
     char fileName[] = "appuntamenti.txt";
     /* Poichè non specificato dal testo dell'esame, presuppongo che un dottore 
@@ -255,7 +256,7 @@ int main()
      */
     paziente *list = leggi_appuntamenti(fileName);
     
-    calcola_preventivi(&list, &tariffe);
+    calcola_preventivi(&list, tariffe);
     stampa_lista(&list);
 
     return EXIT_SUCCESS;
