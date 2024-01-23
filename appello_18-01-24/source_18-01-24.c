@@ -1,167 +1,257 @@
-/* Nicholas Magi, Matricola: 0001113915 */
-
+/* Nicholas Magi, Matricola: 0001113915*/
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
 #include <assert.h>
+#include <time.h>
+#include <limits.h>
 
+#define EMPTY_STRING ""
 #define NR_GIORNI 7
+#define NR_TURNI 8
+#define COUNT_REPARTI 200
+#define COUNT_ESUBERI 100
 
-/* Supponiamo l'esistenza di massimo 3 reparti 
-(dato che il numero non è specificato dal testo) */
-#define NR_REPARTI 3
+#define SIZEOF(vect) (sizeof(vect) / sizeof(vect[0]))
 
 typedef struct singolo_turno {
     int id_turno;
     int pazienti_per_turno;
-    int pazienti_effettivi;
-    char id_medico1[12 + 1]; /* 12 char utili + 1 di terminatore */
+
+    char id_medico1[12 + 1];
+    int pazienti_medico1;
+    int pazienti_medico1_extra;
+
     char id_medico2[12 + 1];
+    int pazienti_medico2;
+    int pazienti_medico2_extra;
+
+    int pazienti_totali;
 } singolo_turno;
 
 typedef struct reparto {
-    char id_reparto[5 + 1]; /* 5 char utili + 1 di terminatore */
-    int pazienti_extra;
-    singolo_turno turni[NR_GIORNI];
+    char id_reparto[5 + 1];
+    singolo_turno turni[NR_GIORNI][NR_TURNI];
 } reparto;
 
-typedef struct list_reparto {
-    reparto *data;
-    int lastIndex;
-    int size;
-} list_reparto;
-
 typedef struct reparto_medici {
+    char codice_prestazione_richiesta[25 + 1];
     char id_reparto[5 + 1];
-    char codice_richiesta_prestazione[25 + 1];
 } reparto_medici;
 
-char *get_reparto_id_by_codice_prestazione(reparto_medici *repartoMedici, char *codice_richiesta_prestazione)
+void aggiungi_reparto(reparto *reparti, reparto *rep) 
 {
-    for (int i = 0; i < NR_REPARTI; i++) 
+    /* 
+     * Poiché il vettore reparti è ordinato per 'id_reparto' crescente,
+     * ogni volta che inserisco un nuovo reparto devo mantenere tale ordine.
+     */
+    
+    /* [PRIORITY INSERT] */
+}
+
+char *get_reparto_id_by_codice_prestazsione(char *codice_prestazione_richiesta, reparto_medici *repartoMedici) 
+{
+    /* Ciclo che continua per tutta la lunghezza del vettore */
+    for (int i = 0; i < SIZEOF(repartoMedici); i++) 
     {
-        if (strcmp(repartoMedici->codice_richiesta_prestazione, codice_richiesta_prestazione) == 0)
-            return repartoMedici->id_reparto;
+        if (strcmp(codice_prestazione_richiesta, repartoMedici[i].codice_prestazione_richiesta) == 0) 
+        {
+            return repartoMedici[i].id_reparto;
+        }
     }
 
-    /* se non trovo l'id_reparto, allora ritorno NULL */
     return NULL;
 }
 
-reparto *get_reparto_by_id(list_reparto *list, char *id_reparto) 
+int get_reparto_index_by_id(reparto *reparti, char *id_reparto) 
 {
-    for (int i = 0; i <= list->lastIndex; i++) 
+    for (int i = 0; i < COUNT_REPARTI; i++) 
     {
-        /* Cerco il rispettivo reparto - quando l'ho trovato, allora lo restituisco */
-        if (strcmp(list->data[i].id_reparto, id_reparto) == 0) 
-            return &list->data[i];
+        if (strcmp(reparti[i].id_reparto, id_reparto) == 0) 
+            return i;
     }
 
-    return NULL;
+    return -1;
 }
 
-void leggi_appuntamenti(char *fileName, list_reparto *reparti, reparto *esuberi) 
+void leggi_appuntamenti(char *fileName, reparto *reparti, reparto_medici *repartoMedici, reparto *esuberi) 
 {
     FILE *pFile = fopen(fileName, "r");
-    assert(pFile != NULL); /* NULL check */
+    assert(pFile != NULL);
 
-    /* Vettore dato dal testo - corrispondenza tra codice_prestazione_richiesta e id_reparto */
-    reparto_medici repartoMedici[NR_REPARTI];
-
-    /* Vettore 'esuberi' richiesto dal testo */
-    int idxEsubero = 0;
-
-    while (!feof(pFile)) /* Il ciclo continua finché il cursore in lettura del file non ha raggiunto la fine del file */
+    int idxEsubero = 0, idxReparto = 0;
+    while (!feof(pFile)) 
     {
-        char id_paziente[12 + 1], id_medico[12 + 1], codice_richiesta_prestazione[25 + 1];
-        int turno_richiesto, giorno_richiesto;
+        char id_medico_richiesto[12 + 1], codice_prestazione_richiesta[25 + 1];
+        int giorno_richiesto, id_turno_richiesto;
 
-        /* Leggo tutta la riga e memorizzo le relative informazioni - sposto il cursore in lettura alla riga successiva */
-        fscanf(pFile, "%s %s %s %d %d\n", 
-            id_paziente, 
-            id_medico, 
-            codice_richiesta_prestazione, 
-            &turno_richiesto, 
-            &giorno_richiesto);
+        fscanf(pFile, "%*s %s %s %d %d\n", 
+            id_medico_richiesto, codice_prestazione_richiesta, 
+            &giorno_richiesto, &id_turno_richiesto);
 
-        int firstIndexAvailable = reparti->lastIndex + 1;
-        assert(firstIndexAvailable <= reparti->size); /* Controllo se posso aggiungere altri elementi al vettore reparti */
-
-        /* Se sono qui, vuol dire che posso ancora aggiungere visite */
-        char *id_reparto = get_reparto_id_by_codice_prestazione(&repartoMedici, codice_richiesta_prestazione);
-        
-        /* Suppongo il vettore abbia tutte le corrispondenze possibili, altrimenti esco dal programma */
+        char *id_reparto = get_reparto_id_by_codice_prestazione(codice_prestazione_richiesta, repartoMedici);
+        /* 
+         *  Suppongo che la corrispondenza 
+         *  codice_prestazione_richiesta - id_reparto sia garantita per qualsiasi id_reparto 
+         */
         assert(id_reparto != NULL);
 
-        /* Cerco il reparto interessato dalla visita */
-        reparto *rep = get_reparto_by_id(&reparti, id_reparto);
-
-        /* Se il reparto non esiste, allora posso aggiungerlo e aggiungere la visita richiesta */        
-        if (rep == NULL) 
+        int nuovo_reparto_idx = get_reparto_index_by_id(reparti, id_reparto);
+        reparto *rep;
+        if (nuovo_reparto_idx == -1) 
         {
+            /* Se il nuovo reparto ha indice -1 allora non esiste, dunque lo creo */
             rep = (reparto *)malloc(sizeof(reparto));
-            assert(rep != NULL); /* NULL check */
+            assert(rep != NULL);
 
             strcpy(rep->id_reparto, id_reparto);
-        }
+            strcpy(rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].id_medico1, EMPTY_STRING);
+            strcpy(rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].id_medico2, EMPTY_STRING);
 
-        if (rep->turni[giorno_richiesto].pazienti_effettivi + 1 >= rep->turni[giorno_richiesto].pazienti_per_turno) 
-        {
-            /* Se in quel reparto, per il turno richiesto, sforo il numero massimo 
-             * di pazienti visitabili allora si crea un esubero 
-             */
-            esuberi[idxEsubero] = *rep;
-            idxEsubero++;
+            rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].id_turno = id_turno_richiesto;
+            rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].pazienti_per_turno = (rand() % 10) + 1;
+
+            rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].pazienti_medico1 =
+                rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].pazienti_medico2 =
+                rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].pazienti_medico1_extra =
+                rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].pazienti_medico2_extra =
+                rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1].pazienti_totali = 0;
+
+            aggiungi_reparto(reparti, rep);      
         }
         else 
         {
-            /* altrimenti aggiorno il numero di pazienti visitati
-             * e aggiungo il reparto al vettore
-             */
-            rep->turni[giorno_richiesto].pazienti_effettivi += 1;
-            reparti->data[firstIndexAvailable] = *rep;
-            reparti->lastIndex = firstIndexAvailable;
-        }
+            rep = &reparti[nuovo_reparto_idx];
+        } 
+
+        singolo_turno *turno = &rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1];
         
+        /* Assegno il medico richiesto - se ancora risulta vuoto */
+        if (strcmp(turno->id_medico1, EMPTY_STRING))
+            strcpy(turno->id_medico1, id_medico_richiesto);
+        else if (strcmp(turno->id_medico2, EMPTY_STRING))
+            strcpy(turno->id_medico2, id_medico_richiesto);
+        
+        /* Se supero il numero massimo di pazienti visitabili per quel turno, allora 
+        si crea un esubero */
+        if (turno->pazienti_totali + 1 >= turno->pazienti_per_turno) 
+        {
+            strcmp(turno->id_medico1, id_medico_richiesto) == 0 
+                ? turno->pazienti_medico1_extra++ 
+                : turno->pazienti_medico2_extra++;
+
+            rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1] = *turno;
+            esuberi[idxEsubero] = *rep;
+            
+            idxEsubero++;
+            continue;
+        }
+         
+        strcmp(turno->id_medico1, id_medico_richiesto) == 0 
+            ? turno->pazienti_medico1++
+            : turno->pazienti_medico2++;
+
+        turno->pazienti_totali++;
     }
 }
 
-void occupazione_reparti(reparto_medici *repartoMedici, list_reparto *reparti) 
+char *get_medico_con_max_richieste(reparto *esuberi)
 {
-    for (int i = 0; i <= reparti->lastIndex; i++) 
+    int maxValue = INT_MIN;
+    char *id_medico_max_pazienti = NULL;
+
+    for (int i = 0; i < COUNT_ESUBERI; i++) 
     {
-        /* ... */
+        for (int giorno = 0; giorno < NR_GIORNI; giorno++) 
+        {
+            for(int turno = 0; turno < NR_TURNI; turno++)
+            {
+                if (esuberi[i].turni[giorno][turno].pazienti_medico1_extra > maxValue) 
+                {
+                    maxValue = esuberi[i].turni[giorno][turno].pazienti_medico1_extra;
+                    strcpy(id_medico_max_pazienti, esuberi[i].turni[giorno][turno].id_medico1);
+                }
+
+                if (esuberi[i].turni[giorno][turno].pazienti_medico2_extra > maxValue) 
+                {
+                    maxValue = esuberi[i].turni[giorno][turno].pazienti_medico2_extra;
+                    strcpy(id_medico_max_pazienti, esuberi[i].turni[giorno][turno].id_medico2);
+                }
+            }
+        } 
     }
+
+    return id_medico_max_pazienti;
 }
 
 void medici_esuberi(reparto *esuberi) 
 {
-    for (int i = 0; i < 100; i++) 
+    char *medico_con_max_richieste = get_medico_con_max_richieste(esuberi);
+    
+    printf("Medico con più richieste: %s\n\n", medico_con_max_richieste);
+
+    for (int i = 0; i < COUNT_ESUBERI; i++) 
     {
-        printf("ID Reparto: %s, Pazienti extra: %d\n", 
-            esuberi->id_reparto,
-            esuberi->pazienti_extra);
+        for (int giorno = 0; giorno < NR_GIORNI; giorno++) 
+        {
+            for(int turno = 0; turno < NR_TURNI; turno++)
+            {
+                printf("=== Reparto [%s] ===\n", esuberi->id_reparto);
+                printf("\tRichieste per medico '%s': %d\n", esuberi->turni[giorno][turno].id_medico1, esuberi->turni[giorno][turno].pazienti_medico1_extra);
+                printf("\tRichieste per medico '%s': %d\n", esuberi->turni[giorno][turno].id_medico2, esuberi->turni[giorno][turno].pazienti_medico2_extra);
+            }
+        }
+
+        puts(""); 
+    }
+}
+
+void occupazione_reparti(reparto *reparti)
+{
+    for (int i = 0; i < COUNT_REPARTI; i++) 
+    {
+        for (int giorno = 0; giorno < NR_GIORNI; giorno++) 
+        {
+            int max_pazienti_giorno = 0, pazienti_effettivi = 0;
+            for (int turno = 0; turno < NR_TURNI; turno++) 
+            {
+                pazienti_effettivi += reparti[i].turni[giorno][turno].pazienti_totali;
+                max_pazienti_giorno += reparti[i].turni[giorno][turno].pazienti_per_turno;
+            }
+
+            float occupazione_giornaliera = ((float)pazienti_effettivi / (float)max_pazienti_giorno) * 100;
+            
+            printf("Reparto [%s]: nel giorno %d, occupato al %.2f", 
+                reparti[i].id_reparto, giorno + 1, occupazione_giornaliera);
+
+            puts("");
+        }
     }
 }
 
 int main() 
 {
-    /* 
-     * Utilizzo una struct ausiliaria per tenermi memorizzato anche l'indice dell'ultimo 
-     * elemento che posso trovare
-     */
-    list_reparto *reparti = (list_reparto *)malloc(sizeof(list_reparto));
-    assert(reparti != NULL); /* NULL check */
-    reparti->lastIndex = -1;
-    reparti->data = (reparto *)malloc(sizeof(reparto) * 200); /* Vettore allocato dinamicamente */
-    reparti->size = 200;
+    srand(time(NULL));
+    char *fileName = "appuntamenti.txt";
+
+    /* Vettore allocato dinamicamente */
+    reparto *reparti = malloc(sizeof(reparto) * COUNT_REPARTI);
+    assert(reparti != NULL);
+
+    /* Vettore già riempito - dato dal testo */
+    reparto_medici *repartoMedici = (reparto_medici *)malloc(sizeof(reparto_medici) * (rand() % 10 + 1));
+    assert(repartoMedici != NULL);
 
     reparto esuberi[100];
-    /* Leggo il file 'appuntamenti.txt' e inizializzo il vettore 'reparti' */
-    leggi_appuntamenti("appuntamenti.txt", reparti, &esuberi);
 
-    /* Stampo gli esuberi per ogni reparto */
-    medici_esuberi(&esuberi);
+    leggi_appuntamenti(fileName, reparti, repartoMedici, esuberi);
+    medici_esuberi(esuberi);
+
+    /* 
+     * Non passo il vettore repartoMedici tra i parametri di input come da richiesta poiché 
+     * il campo 'id_reparto' è già contenuto nel vettore 'reparti' 
+     */
+    occupazione_reparti(reparti);
     return 0;
 }
