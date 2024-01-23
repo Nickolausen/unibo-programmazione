@@ -243,7 +243,7 @@ int main()
     reparto_medici *repartoMedici = (reparto_medici *)malloc(sizeof(reparto_medici) * (rand() % 10 + 1));
     assert(repartoMedici != NULL);
 
-    reparto esuberi[100];
+    reparto esuberi[COUNT_ESUBERI];
 
     leggi_appuntamenti(fileName, reparti, repartoMedici, esuberi);
     medici_esuberi(esuberi);
