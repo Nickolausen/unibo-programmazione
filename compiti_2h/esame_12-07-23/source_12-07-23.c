@@ -203,6 +203,7 @@ paziente *leggi_appuntamenti(char *fileName)
         priority_insert_paziente(&out_list, paz);
     }
 
+    fclose(pFile);
     return out_list;
 }
 
