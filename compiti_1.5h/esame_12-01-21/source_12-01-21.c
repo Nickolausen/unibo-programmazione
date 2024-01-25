@@ -63,7 +63,7 @@ void sort_by_ascending(Studente *stud)
     }
 }
 
-bool head_insert(Studente **list, Studente *node) 
+bool priority_insert(Studente **list, Studente *node) 
 {
     if (node == NULL) return false;
 
@@ -146,7 +146,7 @@ Studente* leggi_lezioni(char fileName[])
 
         sort_by_ascending(stud);
 
-        if (!head_insert(&out_list, stud)) 
+        if (!priority_insert(&out_list, stud)) 
             printf("[%d] Inserimento non riuscito\n", idxNode);
 
         idxNode++;

@@ -56,7 +56,7 @@ int find_index(list_medico **list, char id_medico[12 + 1])
 
 int to_index(int giorno) { return giorno - 1; }
 
-void head_insert(singolo_turno **list, singolo_turno *node) 
+void priority_insert(singolo_turno **list, singolo_turno *node) 
 {
     node->next = *list;
     *list = node;
@@ -138,7 +138,7 @@ void leggi_appuntamenti(char fileName[], list_medico **output)
             turno->next = NULL;
             turno->pazienti_per_turno = 0;
 
-            head_insert(&pTurno, turno);
+            priority_insert(&pTurno, turno);
         }
 
         /* Se il turno individuato può contenere ulteriori pazienti, inserisco il paziente in coda */
