@@ -1,4 +1,4 @@
-/* Nicholas Magi, Matricola: 0001113915*/
+/* Nicholas Magi, Matricola: 0001113915 */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -50,9 +50,9 @@ void aggiungi_reparto(reparto *reparti, reparto *rep)
     /* [PRIORITY INSERT] */
 }
 
-char *get_reparto_id_by_codice_prestazsione(char *codice_prestazione_richiesta, reparto_medici *repartoMedici) 
+char *get_reparto_id_by_codice_prestazione(char *codice_prestazione_richiesta, reparto_medici *repartoMedici) 
 {
-    /* Ciclo che continua per tutta la lunghezza del vettore */
+    /* Ciclo che continua per tutta la lunghezza del vettore - con SIZEOF si intende la lunghezza del vettore */
     for (int i = 0; i < SIZEOF(repartoMedici); i++) 
     {
         if (strcmp(codice_prestazione_richiesta, repartoMedici[i].codice_prestazione_richiesta) == 0) 
