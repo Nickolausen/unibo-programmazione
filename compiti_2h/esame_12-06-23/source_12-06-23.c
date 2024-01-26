@@ -167,6 +167,6 @@ int main()
     medico *medici = (medico *)malloc(sizeof(medico) * NR_MEDICI);
     assert(medici != NULL);
 
-    
+    leggi_appuntamenti(fileName, medici, NULL);
     return 0;
 }
