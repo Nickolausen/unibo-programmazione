@@ -1,7 +1,7 @@
 # Esercitazioni in preparazione all'esame
 Raccolta di tutti gli esami **al computer** del corso di 00819_1 - Programmazione (CL.A); A.A. 2023/24, LT Ingegneria e Scienze Informatiche, Università di Bologna - Campus di Cesena; la collezione comprende testi provenienti dal portale www.programmazione.info e non (non tutti i testi del 2023 sono reperibili da lì).
 
-Le cartelle `esame_"data"` contengono anche un file `source_"data".c`, che è una possibile soluzione al testo corrispondente. I testi al di fuori di queste cartelle non sono ancora stati affrontati.
+Le cartelle `esame_"data"` contengono anche un file `source_"data".c`, che è una possibile soluzione del testo corrispondente. I testi al di fuori di queste cartelle non sono ancora stati affrontati.
 
 Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i programmi non sono stati completamente testati per simulare a pieno le modalità di svolgimento dell'esame) e di quelli che invece necessitano di una revisione.
 
