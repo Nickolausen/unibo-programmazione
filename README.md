@@ -40,7 +40,7 @@ Per svolgere l'esame scritto, l'iscrizione all'appello tramite portale AlmaEsami
 
 ### Esame orale
 
-L'esame orale **facoltativo** prevede lo svolgimento di esercizi scritti su carta o sul proprio PC personale.
+L'esame orale **facoltativo** prevede lo svolgimento di esercizi scritti su carta o sul proprio PC personale, la cui difficoltà è commisurata al punteggio di partenza dato dall'esame scritto.
 
 ### Il voto
 
