@@ -42,17 +42,21 @@ void print_list(node *list)
 
 int main() 
 {
-    node *list = NULL;
-    for (int i = 0; i < 10; i++) 
-    {
-        push(&list, i);
-    }
+    // node *list = NULL;
+    // for (int i = 0; i < 10; i++) 
+    // {
+    //     push(&list, i);
+    // }
 
-    print_list(list);
-    printf("== Pop: %d ==\n", pop(&list)->value);
-    printf("== Pop: %d ==\n", pop(&list)->value);
-    printf("== Pop: %d ==\n", pop(&list)->value);
-    print_list(list);
+    // print_list(list);
+    // printf("== Pop: %d ==\n", pop(&list)->value);
+    // printf("== Pop: %d ==\n", pop(&list)->value);
+    // printf("== Pop: %d ==\n", pop(&list)->value);
+    // print_list(list);
+
+    int A[2][2] = {{1,2},{3,4}};
+    int (*p)[1] = A;
+    printf("%d %d %d %d", p[0][0], p[0][1], p[1][0], p[1][1]);
 
     return 0;
 }
