@@ -1,5 +1,7 @@
 # Elaborati corso di programmazione
-Esercizi settimanali del corso di 00819_1 - Programmazione (CL.A); A.A. 2023/24, LT Ingegneria e Scienze Informatiche, Università di Bologna - Campus di Cesena.
+Esercizi settimanali del corso di 
+
+**00819_1 - Programmazione (CL.A); A.A. 2023/24, LT Ingegneria e Scienze Informatiche, Università di Bologna - Campus di Cesena.**
 - **Docenti**: prof.ssa Antonella Carbonaro, dott. Mirko Ravaioli;
 - **Tutor**: Enrico Gnagnarella (in laboratorio), Andrea Negri (correzione esercizi).
 - **Linguaggio di programmazione**: C99;
