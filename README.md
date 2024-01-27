@@ -3,6 +3,8 @@ Raccolta di tutti gli esami **al computer** del corso di 00819_1 - Programmazion
 
 Le cartelle `esame_"data"` contengono anche un file `source_"data".c`, che è una possibile soluzione del testo corrispondente. I testi al di fuori di queste cartelle non sono ancora stati affrontati.
 
+Le cartelle `appello_"data"` contengono i file consegnati - e le relative **ipotetiche** soluzioni - durante gli appelli che ho sostenuto per passare l'esame.
+
 Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i programmi non sono stati completamente testati per simulare a pieno le modalità di svolgimento dell'esame) e di quelli che invece necessitano di una revisione.
 
 ### Esami COMPLETI
