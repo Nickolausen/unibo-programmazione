@@ -15,6 +15,7 @@ Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i pro
 
 ### Esami DA REVISIONARE
 - [compiti_2h\esame_12-06-23](./compiti_2h/esame_12-06-23)
+- [compiti_2h\esame_13-09-22](./compiti_2h/esame_13-09-22) - comprensione del testo
 - [compiti_2h\esame_14-02-22](./compiti_2h/esame_14-02-22)
 - [compiti_1.5h\esame_21-06-22](./compiti_1.5h/esame_21-06-22)
 - [compiti_1.5h\esame_17-01-22](./compiti_1.5h/esame_17-01-22)
@@ -51,3 +52,6 @@ La conferma del voto avviene recandosi di persona in Dipartimento nel giorno di 
 Il rifiuto del voto avviene:
 - comunicandolo subito dopo aver terminato l'orale - se hai sostenuto l'orale;
 - svolgendo un nuovo esame scritto senza presentarsi all'orale - se non si vuole sostenere l'orale oppure se il voto dello scritto è < 18.
+
+
+> Enjoy the esubero!
