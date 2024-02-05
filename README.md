@@ -15,7 +15,7 @@ Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i pro
 - [compiti_2h\esame_31-01-22](./compiti_2h/esame_31-01-22) - FUNZIONANTE
 
 ### Esami DA REVISIONARE
-- [compiti_2h\esame_21-06-22](./compiti_2h/esame_21-06-22) - comprensione del testo (manca 'premio_agente_anno', il resto funziona)
+- [compiti_2h\esame_21-06-22](./compiti_2h/esame_21-06-22) - comprensione del testo (manca `premio_agente_anno()`, il resto funziona)
 - [compiti_2h\esame_12-06-23](./compiti_2h/esame_12-06-23)
 - [compiti_2h\esame_13-09-22](./compiti_2h/esame_13-09-22) - comprensione del testo
 - [compiti_2h\esame_14-02-22](./compiti_2h/esame_14-02-22)
