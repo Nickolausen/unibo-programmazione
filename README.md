@@ -10,7 +10,7 @@ Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i pro
 ### Esami COMPLETI
 - [compiti_2h\esame_12-07-23](./compiti_2h/esame_12-07-23)
 - [compiti_2h\esame_13-02-23](./compiti_2h/esame_13-02-23)
-- [compiti_2h\esame_25-01-23](./compiti_2h/esame_25-01-23)
+- [compiti_2h\esame_25-01-23](./compiti_2h/esame_25-01-23) - FUNZIONANTE
 - [compiti_2h\esame_11-01-23](./compiti_2h/esame_11-01-23)
 - [compiti_2h\esame_31-01-22](./compiti_2h/esame_31-01-22) - FUNZIONANTE
 
