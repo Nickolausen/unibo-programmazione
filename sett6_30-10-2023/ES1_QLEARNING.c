@@ -529,15 +529,15 @@ int main()
     int nrTrainingSteps;
     do 
     {
-        printf("How many training iterations do you want? (At least 1)\n");
-        printf("%sWARNING: Low training iterations increase the chance of getting stuck in a loop.%s\n(At least 1000 iterations are recommended)\n", CYLW, CRESET);
+        printf("How many training iterations do you want the agent to perform? (At least 1)\n");
+        printf("%sWARNING: A small amount of training iterations increases the chance of getting stuck in a loop.%s\n(At least 1000 iterations are recommended)\n", CYLW, CRESET);
         printf("Input: ");
         fflush(stdin);
         scanf("%d", &nrTrainingSteps);
         puts("");
 
         if (nrTrainingSteps <= 0)
-            puts("Invalid input! AT LEAST 1 TRAINING ITERATION IS REQUIRED");
+            puts("Invalid input! AT LEAST 1 TRAINING ITERATION IS REQUIRED.");
     } while (nrTrainingSteps <= 0);
 
     bool keepTraining;
