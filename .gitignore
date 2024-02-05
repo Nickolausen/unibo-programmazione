@@ -77,3 +77,4 @@ py
 *.bat
 .idea
 *.exe
+.metals
