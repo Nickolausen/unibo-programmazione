@@ -27,7 +27,7 @@ Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i pro
 
 ## Modalità d'esame A.A. 2023/24
 
-**N.B.** Quanto successivamente scritto è valido per l'Anno Accademico 2023-2024; è quindi soggetto di **possibili variazioni negli anni successivi**.
+> **N.B.** Quanto successivamente scritto è valido per l'Anno Accademico 2023-2024; è quindi soggetto di **possibili variazioni negli anni successivi**.
 
 ### Regole generali
 Per l'A.A. 2023/24, l'esame si svolge **al computer** e la sua durata è indicata dall'appello presente sul portale AlmaEsami (esempio: se su AlmaEsami l'appello dura dalle 09:00 alle 11:00, allora il testo d'esame sarà della durata di 2h). 
