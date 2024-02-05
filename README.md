@@ -36,7 +36,7 @@ Durante l'esame non è possibile utilizzare appunti, dispense, manuali e risorse
 
 Non è ammessa l'installazione di alcun programma durante l'esame.
 
-L'obiettivo generale è quello di scrivere un codice **ben ragionato** e **non necessariamente funzionante**, di fatti anche scrivere il codice su un foglio di blocco note è possibile. Per la mole di lavoro da portare a termine in 2ore / 1ora e 30 è **improbabile riuscire ad avviare il proprio programma**.
+L'obiettivo generale è quello di scrivere un codice **ben ragionato** e **non necessariamente funzionante**, di fatti anche scrivere il codice su un foglio di blocco note è permesso. Per la mole di lavoro da portare a termine in 2ore / 1ora e 30 è **improbabile riuscire ad avviare il proprio programma**.
 
 Per svolgere l'esame scritto, l'iscrizione all'appello tramite portale AlmaEsami è **obbligatoria**, mentre per sostenere l'esame orale non è necessariamente richiesta.
 
