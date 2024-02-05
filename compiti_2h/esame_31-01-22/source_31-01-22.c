@@ -209,8 +209,8 @@ void premio_agente_anno(Prestazione *appuntamenti, List_Agente *vect)
 {
     /* 
      * Ragionamento step-by-step:
-     * Poiché ho salvato nel vettore dinamico il numero di clienti unici per ogni agente,
-     * partendo dalla lista di liste appuntamenti mi salvo in un vettore ausiliario 'agenti_n_clienti_unici'
+     * Poiché ho salvato nel vettore allocato dinamicamente il numero di clienti unici per ogni agente,
+     * partendo dalla lista di liste 'appuntamenti' mi salvo in un vettore ausiliario 'agenti_n_clienti_unici'
      * le singole occorrenze di agente (se uno stesso agente compare più volte nella lista, comparirà una sola volta nel vettore)
      * 
      * La lista 'agenti_already_seen' mi permette di tracciare gli agenti che, iterazione dopo iterazione, compaiono.
