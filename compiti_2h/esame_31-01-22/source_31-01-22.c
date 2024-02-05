@@ -219,7 +219,7 @@ void premio_agente_anno(Prestazione *appuntamenti, List_Agente *vect)
      * n_clienti_unici_agente in senso decrescente e stampo le prime tre posizioni
      * 
      * N.B.: Chiaramente lo stesso obiettivo sarebbe stato raggiungibile utilizzando solamente il vettore allocato dinamicamente
-     * "agenti", ma la consegna richiede esplicitamente di passare dalla lista di liste costruita nella funzione 'leggi_appuntamenti'. 
+     * "agenti", ma la consegna richiede esplicitamente di avere e lavorare con la lista di liste costruita nella funzione 'leggi_appuntamenti'. 
      */
 
     const int length = vect->last_index + 1;

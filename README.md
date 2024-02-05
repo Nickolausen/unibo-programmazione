@@ -5,7 +5,7 @@ Le cartelle `esame_"data"` contengono anche un file `source_"data".c`, che è un
 
 Le cartelle `appello_"data"` contengono i file consegnati - e le relative **ipotetiche** soluzioni - durante gli appelli che ho sostenuto per passare l'esame.
 
-Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i programmi non sono stati completamente testati per simulare a pieno le modalità di svolgimento dell'esame) e di quelli che invece necessitano di una revisione.
+Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i programmi non sono stati completamente testati per simulare a pieno le modalità di svolgimento dell'esame) e di quelli che invece necessitano di una revisione - con relative annotazioni.
 
 ### Esami COMPLETI
 - [compiti_2h\esame_12-07-23](./compiti_2h/esame_12-07-23)
@@ -15,10 +15,10 @@ Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i pro
 - [compiti_2h\esame_31-01-22](./compiti_2h/esame_31-01-22) - FUNZIONANTE
 
 ### Esami DA REVISIONARE
+- [compiti_2h\esame_21-06-22](./compiti_2h/esame_21-06-22) - comprensione del testo (manca 'premio_agente_anno', il resto funziona)
 - [compiti_2h\esame_12-06-23](./compiti_2h/esame_12-06-23)
 - [compiti_2h\esame_13-09-22](./compiti_2h/esame_13-09-22) - comprensione del testo
 - [compiti_2h\esame_14-02-22](./compiti_2h/esame_14-02-22)
-- [compiti_1.5h\esame_21-06-22](./compiti_1.5h/esame_21-06-22)
 - [compiti_1.5h\esame_17-01-22](./compiti_1.5h/esame_17-01-22)
 - [compiti_1.5h\esame_13-09-21](./compiti_1.5h/esame_13-09-21)
 - [compiti_1.5h\esame_09-06-21](./compiti_1.5h/esame_09-06-21)
