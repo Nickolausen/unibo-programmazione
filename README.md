@@ -16,10 +16,10 @@ Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i pro
 
 ### Esami DA REVISIONARE
 - [compiti_2h\esame_21-06-22](./compiti_2h/esame_21-06-22) - comprensione del testo (manca `premio_agente_anno()`, il resto funziona)
-- [compiti_2h\esame_12-06-23](./compiti_2h/esame_12-06-23)
+- [compiti_2h\esame_12-06-23](./compiti_2h/esame_12-06-23) - comprensione del testo - manca gestione esuberi 
 - [compiti_2h\esame_13-09-22](./compiti_2h/esame_13-09-22) - comprensione del testo
-- [compiti_2h\esame_14-02-22](./compiti_2h/esame_14-02-22)
-- [compiti_1.5h\esame_17-01-22](./compiti_1.5h/esame_17-01-22)
+- [compiti_2h\esame_14-02-22](./compiti_2h/esame_14-02-22) - comprensione del testo / esuberi
+- [compiti_1.5h\esame_17-01-22](./compiti_1.5h/esame_17-01-22) - correggere funzione `pulisci_lista()` e inserimento dati in `piano_di_studi`
 - [compiti_1.5h\esame_13-09-21](./compiti_1.5h/esame_13-09-21)
 - [compiti_1.5h\esame_09-06-21](./compiti_1.5h/esame_09-06-21)
 - [compiti_1.5h\esame_15-02-21](./compiti_1.5h/esame_15-02-21)

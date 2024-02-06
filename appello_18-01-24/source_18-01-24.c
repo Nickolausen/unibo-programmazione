@@ -46,8 +46,24 @@ void aggiungi_reparto(reparto *reparti, reparto *rep)
      * Poiché il vettore reparti è ordinato per 'id_reparto' crescente,
      * ogni volta che inserisco un nuovo reparto devo mantenere tale ordine.
      */
-    
-    /* [PRIORITY INSERT] */
+
+    /* scorro tutto il vettore  */
+    for (int i = 0; i < SIZEOF(reparti); i++) 
+    {
+        /* cerco la posizione in cui inserire il nuovo reparto */
+        if (strcmp(reparti[i].id_reparto, rep->id_reparto) < 0)
+        {
+            /* shifto tutti gli elementi a destra di una posizione */
+            for (int j = SIZEOF(reparti) - 1; j > i; j++) 
+            {
+                reparti[j] = reparti[j - 1];
+            }
+
+            /* inserisco il nuovo reparto */
+            reparti[i] = *rep;
+            return;
+        }
+    }
 }
 
 char *get_reparto_id_by_codice_prestazione(char *codice_prestazione_richiesta, reparto_medici *repartoMedici) 

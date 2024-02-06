@@ -1,327 +1,230 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
+#include <assert.h>
 
 #define MAX_ESAMI 25
-#define SIZE 100
+#define NR_STUDENTI 200
+#define EMPTY_STRING ""
 
-#ifdef _WIN32
-#define CLEAR_CONSOLE system("cls")
-#else
-#define CLEAR_CONSOLE system("clear")
-#endif
+typedef struct esame {
+  char id_esame[15 + 1];
+  char esito[4 + 1];
+} esame;
 
-typedef struct Esame {
-  char id_esame[16];
-  char esito[5];
-} Esame;
-
-/*
- * La linked list tradizionale prevede una struct del tipo:
- * struct Nodo 
- * {
- *    Studente *data;
- *    struct Nodo *next;
- * };
- * - per accorciare e semplificare il lavoro, ho incorporato il *next nella struct Studente;
- */
-typedef struct Studente{
+typedef struct studente {
   int matricola;
-  char nome_e_cognome[100];
-  Esame *sequenza_esami;
-  int nrEsami;
+  char nome_e_cognome[100 + 1];
+  esame esami[MAX_ESAMI];
+  int nr_esami;
 
-  struct Studente* next;
-} Studente;
+  struct studente *next;
+} studente;
 
-typedef struct {
+typedef struct _piano_di_studi {
   int matricola;
   char *esami[MAX_ESAMI];
-} PianoStudiStudente;
+} _piano_di_studi;
 
-typedef struct ListPianoStudi {
-  PianoStudiStudente *data;
-  int size;
-  int lastIndex;
-} ListPianoStudi;
-
-typedef struct  {
-  float perc_promossi;
-  float perc_lode;
-  int nr_ritirati;
-} Statistiche;
-
-void sort_by_ascending(ListPianoStudi **list) 
+typedef struct list_piano_di_studi 
 {
-  /*
-   * Se il vettore contiene un solo elemento (quindi lastIndex == 0)
-   * allora non ordino il vettore
-   */
-  if ((*list)->lastIndex < 1) return;
+  _piano_di_studi *data;
+  int last_index;
+  int size;
+} list_piano_di_studi;
 
-  bool swapping = true;
-  while (swapping) 
+typedef struct statistiche {
+  float perc_superati;
+  float perc_ritirati;
+  float perc_lode;
+} statistiche;
+
+void inserisci_in_piano_studi(list_piano_di_studi *vect, _piano_di_studi *studente) 
+{
+  int first_index_available = vect->last_index + 1;
+  if (first_index_available >= vect->size)
   {
-    /*
-     * Imposto swapping a false; se cambia valore nel codice successivo,
-     * vuol dire che il vettore non è ancora ordinato
-     */
-    swapping = false;
-    
-    for (int i = 0; i < (*list)->lastIndex; i++) 
-    {
-      PianoStudiStudente swapElement;
-      if ((*list)->data[i].matricola > (*list)->data[i + 1].matricola) 
-      {
-        swapping = true;
+    fprintf(stderr, "ERRORE: Impossibile inserire nuovi studenti\n");
+    return;
+  }
 
-        swapElement = (*list)->data[i];
-        (*list)->data[i] = (*list)->data[i + 1];
-        (*list)->data[i + 1] = swapElement;
+  for (int i = 0; i <= vect->last_index; i++) 
+  {
+    if (studente->matricola > vect->data[i].matricola) 
+    {
+      for (int j = vect->last_index + 1; j > i; j--)
+      {
+        vect->data[j] = vect->data[j - 1];
       }
+
+      vect->data[i] = *studente;
+      vect->last_index = first_index_available;
     }
   }
 }
 
-/*
- * Funzione per aggiungere un elemento al piano di studi; la funzione ordina
- * automaticamente la lista ad ogni inserimento, in base alla matricola in ordine *crescente*.
- */
-void aggiungi_elemento(ListPianoStudi **piano_di_studi, PianoStudiStudente *elemento) 
+void aggiungi_carriera_studente(studente **list, studente *stud) 
 {
-  int firstAvailableIndex = (*piano_di_studi)->lastIndex + 1;
-  (*piano_di_studi)->data[firstAvailableIndex] = *elemento;
+  assert(stud != NULL);
 
-  (*piano_di_studi)->lastIndex = firstAvailableIndex;
-  sort_by_ascending(piano_di_studi);
+  stud->next = *list;
+  *list = stud;
 }
 
-/*
- * Funzione per inserire un nodo in testa alla linked list
- */
-bool head_insert(Studente **list, Studente *node) 
-{
-  if (node == NULL) return false;
-  
-  (node)->next = *list;
-  *list = node;
-
-  return true;
-}
-
-Studente* leggi_carriera(char fileName[]) 
+studente *leggi_carriera(char *fileName)
 {
   FILE *pFile = fopen(fileName, "r");
-  if (pFile == NULL) 
+  assert(pFile != NULL);
+
+  studente *out_list = NULL;
+
+  while (!feof(pFile))
   {
-    printf("Unable to open '%s'. Exiting...", fileName);
-    return NULL;
-  }
+    studente *new_stud = (studente *)malloc(sizeof(studente));
+    assert(new_stud != NULL);
 
-  /*
-   * Preparo la testa della linked list che manderò in output.
-   */
-  Studente* out_list = NULL;
+    char tmpNome[100 + 1], tmpCognome[100 + 1];
+    fscanf(pFile, "%d %s %s", &(new_stud->matricola), tmpNome, tmpCognome);
 
-  /*
-   * Il ciclo continua finché il cursore in lettura del file non raggiunge
-   * la fine del file
-   */
-  while(!feof(pFile)) 
-  {
-    /*
-     * Preparo il nodo che andrà inserito in testa alla linked list
-     */
-    Studente *stud = (Studente*)malloc(sizeof(Studente));
-    if (stud == NULL) return NULL;
+    snprintf(new_stud->nome_e_cognome, 100, "%s %s", tmpNome, tmpCognome);
 
-    stud->nrEsami = 0;
-    char tmpNome[100], tmpCognome[100];
-
-    stud->matricola = -1;
-    fscanf(pFile, "%d %s %s", 
-      &(stud->matricola),
-      tmpNome,
-      tmpCognome);
-  
-    /* 
-     * Aggiorno il campo 'nome_e_cognome' della struct Studente, poichè il funzionamento di 'fscanf' non mi permette
-     * farlo in maniera automatica
-     */
-    snprintf(stud->nome_e_cognome, 100, "%s %s", tmpNome, tmpCognome);
-
-    stud->sequenza_esami = (Esame*)malloc(sizeof(Esame) * MAX_ESAMI);
-    if (stud->sequenza_esami == NULL) {
-      printf("Unable to allocate memory. Exiting...");
-      return NULL;
-    }
-
-    /*
-     * Lettura di un numero indeterminato di coppie di dati - 'id_esame' ed 'esito'
-     */
-    int idxEsame = 0;
-    while (fgetc(pFile) == ' ') 
+    new_stud->nr_esami = 0;
+    while (fgetc(pFile) == ' ' && new_stud->nr_esami < MAX_ESAMI) 
     {
       fscanf(pFile, "%s %s", 
-        stud->sequenza_esami[idxEsame].id_esame,
-        stud->sequenza_esami[idxEsame].esito);
+        new_stud->esami[new_stud->nr_esami].id_esame,
+        new_stud->esami[new_stud->nr_esami].esito);
 
-      idxEsame++;
-      stud->nrEsami++;
+      new_stud->nr_esami++;
     }
 
-    if (!head_insert(&out_list, stud)) 
-    {
-      printf("Inserimento non avvenuto.");
-    }
+    aggiungi_carriera_studente(&out_list, new_stud);
   }
 
   return out_list;
 }
 
-/*
-  TO FIX: La rimozione del nodo interessato
-  taglia il collegamento con i nodi successivi.
-*/
-void pulisci_lista(Studente **lista, Studente *prev, int matricola) 
+void pulisci_lista(studente **list, int matricola)
 {
-  Studente *current = *lista;
-  if (current == NULL) return;
+  /* - da correggere - */
+  if (*list == NULL) return;
 
-  if (current->matricola == matricola) 
-  {
-    if (prev == NULL) 
-    {
-      *lista = current->next;
-    }
-    else 
-    {
-      prev->next = current->next;
-    }
+  studente *next_node = (*list)->next;
+  free(*list);
 
-    free(current);
-    return;
-  }
-
-  pulisci_lista(&(current->next), current, matricola);
+  pulisci_lista(&next_node, matricola);
 }
 
-Statistiche statistiche_esame(Studente *list, char id_esame[16])
+int index_of(list_piano_di_studi *piano_studi, int matricola)
 {
-  /*
-   * Poiché la funzione richiede l'output di più variabili,
-   * ritengo una possibile soluzione organizzarle in una struct
-   */
-  Statistiche output_stats = {0,0,0};
-
-  Studente *node = list;
-  int nrStudentiEsame = 0, nrPromossi = 0, nrLode = 0;
-  while (node != NULL) 
+  for (int i = 0; i <= piano_studi->last_index; i++) 
   {
-    bool found = false;
-    int idxEsame = 0;
-    
-    /*
-     * Scorro tutti gli esami di ogni singolo studente - mi fermo quando
-     * ho trovato l'esame interessato oppure, qualora non fosse presente nella carriera dello studente,
-     * quando ho finito di scorrere tutti gli esami quivi presenti
-     */
-    while (!found && idxEsame < (*node).nrEsami) 
-    {
-      /*
-       * Se eseguo il codice nell'if, allora ho trovato l'esame che stavo cercando
-       */
-      if (strcmp(node->sequenza_esami[idxEsame].id_esame, id_esame) == 0) 
-      {
-        found = true;
-        nrStudentiEsame++;
-
-        if (strcmp(node->sequenza_esami[idxEsame].esito, "I") != 0 &&
-          strcmp(node->sequenza_esami[idxEsame].esito, "R") != 0) 
-          nrPromossi++;
-
-        if (strcmp(node->sequenza_esami[idxEsame].esito, "30L") == 0)
-          nrLode++;
-
-        if (strcmp(node->sequenza_esami[idxEsame].esito, "R") == 0)
-          output_stats.nr_ritirati++;
-      }
-
-      idxEsame++;
-    }
-
-    node = node->next;
+    if (piano_studi->data[i].matricola == matricola)
+      return i;
   }
 
-  output_stats.perc_lode = ((float)nrLode / nrStudentiEsame) * 100;
-  output_stats.perc_promossi = ((float)nrPromossi / nrStudentiEsame) * 100;
-
-  return output_stats;
+  return -1;
 }
 
-int main() 
+bool includes(char *id_esame, int matricola, list_piano_di_studi *piano_studi) 
 {
-  CLEAR_CONSOLE;
-  
-  /*
-   * Generazione vettore dinamico 'piano_di_studi'; vettore implementato 
-   * attraverso una lista che mi mantenga anche la lunghezza del vettore (size) e l'indice
-   * dell'ultimo elemento presente nel vettore (lastIndex)
-   */
-  ListPianoStudi* piano_di_studi = (ListPianoStudi*)malloc(sizeof(ListPianoStudi));
-  piano_di_studi->data = (PianoStudiStudente*)malloc(sizeof(PianoStudiStudente) * SIZE);
-  piano_di_studi->size = SIZE;
-  /*
-   * Inserisco -1 come valore simbolico dell'ultimo elemento presente - poiché il vettore
-   * è vuoto
-   */
-  piano_di_studi->lastIndex = -1;
-  PianoStudiStudente stud_2 = {1, {"GAL", "Analisi I", "Fisica"}};
-  PianoStudiStudente stud_1 = {2, {"Programmazione", "OOP", "Programmazione di Reti"}};
-  aggiungi_elemento(&piano_di_studi, &stud_2);
-  aggiungi_elemento(&piano_di_studi, &stud_1);
+  int idx_studente = index_of(piano_studi, matricola);
+  if (idx_studente == -1) return false;
 
-  /*
-   * Stampo il vettore 'piano_di_studi'
-   */
-  for (int i = 0; i <= piano_di_studi->lastIndex; i++) 
+  _piano_di_studi studente = piano_studi->data[idx_studente];
+  for (int idx_esame = 0; idx_esame < MAX_ESAMI; idx_esame++)
   {
-    printf("[%d] Matricola: #%d\n", i, piano_di_studi->data[i].matricola);
-    printf("Esami previsti: \n");
+    if (strcmp(studente.esami[idx_esame], id_esame) == 0)
+      return true;
+  }
 
-    for (int j = 0; j < MAX_ESAMI; j++) 
+  return false;
+}
+
+statistiche *statistiche_esame(char *id_esame, studente *studenti, list_piano_di_studi *piano_studi) 
+{
+  statistiche *out_stats = (statistiche *)malloc(sizeof(statistiche));
+  assert(out_stats != NULL);
+
+  int tot_stud_con_esame = 0;
+  for (int i = 0; i <= piano_studi->last_index; i++) 
+  {
+    /* se uno studente ha quell'esame previsto nel piano di studi, + 1 - diversamente + 0 */
+    tot_stud_con_esame += includes(id_esame, piano_studi->data[i].matricola, piano_studi);
+  }
+
+  out_stats->perc_lode = 0;
+  out_stats->perc_ritirati = 0;
+  out_stats->perc_superati = 0;
+
+  studente *current_stud = studenti;
+  while (current_stud != NULL) 
+  {
+    char last_esito[4 + 1] = EMPTY_STRING;
+    for (int idxEsame = 0; idxEsame < current_stud->nr_esami; idxEsame++) 
     {
-      if (piano_di_studi->data[i].esami[j] != NULL)
-        printf("\t> %s\n", piano_di_studi->data[i].esami[j]);
+      if (strcmp(current_stud->esami[idxEsame].id_esame, id_esame) == 0)
+        strcpy(last_esito, current_stud->esami[idxEsame].esito);
     }
 
-    puts("");
+    if (strcmp("R", last_esito) == 0) 
+    {
+      out_stats->perc_ritirati++;
+    } else if (strcmp("30L", last_esito) == 0)
+    {
+      out_stats->perc_lode++;
+      out_stats->perc_superati++;
+    } else if (strcmp("", last_esito) != 0 && strcmp("I", last_esito) != 0 )
+    {
+      out_stats->perc_superati++;
+    }
+
+    current_stud = current_stud->next;
   }
 
-  Studente *list = leggi_carriera("./carriera.txt");
-  Statistiche stats = statistiche_esame(list, "INF120");
-
-  printf("Esame %s:\n", "INF120");
-  printf("\t> Ritirati: %d\n", stats.nr_ritirati);
-  printf("\t> Percentuale lode: %.2f%%\n", stats.perc_lode);
-  printf("\t> Percentuale promossi: %.2f%%\n", stats.perc_promossi);
-
-  Studente* current_node = list;
-  while (current_node != NULL) 
-  {
-    printf("Matricola: %d\n", current_node->matricola);
-    current_node = current_node->next;
-  }
+  out_stats->perc_lode = (out_stats->perc_lode * 100) / tot_stud_con_esame;
+  out_stats->perc_ritirati = (out_stats->perc_ritirati * 100) / tot_stud_con_esame;
+  out_stats->perc_superati = (out_stats->perc_superati * 100) / tot_stud_con_esame;
   
-  pulisci_lista(&(list), NULL, 123);
+  return out_stats;
+}
 
-  current_node = list;
-  while (current_node != NULL) 
-  {
-    printf("Matricola: %d\n", current_node->matricola);
-    current_node = current_node->next;
-  }
+int main()
+{
+  list_piano_di_studi *piano_di_studi = (list_piano_di_studi *)malloc(sizeof(list_piano_di_studi));
+  assert(piano_di_studi != NULL);
 
-  return 0;
+  piano_di_studi->data = malloc(sizeof(_piano_di_studi) * NR_STUDENTI);
+  assert(piano_di_studi->data != NULL);
+  piano_di_studi->last_index = -1;
+  piano_di_studi->size = NR_STUDENTI;
+  
+  _piano_di_studi *stud1 = (_piano_di_studi *)malloc(sizeof(_piano_di_studi));
+  assert(stud1 != NULL);
+  stud1->matricola = 333145;
+  strcpy(stud1->esami[0], "INF120");
+  strcpy(stud1->esami[1], "INF070");
+  strcpy(stud1->esami[2], "INF090");
+  strcpy(stud1->esami[3], "INF100");
+
+  _piano_di_studi *stud2 = (_piano_di_studi *)malloc(sizeof(_piano_di_studi));
+  assert(stud2 != NULL);
+  stud2->matricola = 33279;
+  strcpy(stud2->esami[0], "GIU123");
+  strcpy(stud2->esami[1], "GIU280");
+  strcpy(stud2->esami[2], "GIU085");
+  strcpy(stud2->esami[3], "GIU300");
+
+  inserisci_in_piano_studi(piano_di_studi, stud1);
+  inserisci_in_piano_studi(piano_di_studi, stud2);
+
+  studente *studenti = leggi_carriera("carriera.txt");
+  statistiche *stats = statistiche_esame("INF090", studenti, piano_di_studi);
+  printf("=== Statistiche per esame 'INF090' ===\n");
+  printf("\t> Percentuale di promossi: %.2f%%\n", stats->perc_superati);
+  printf("\t> Percentuale di respinti: %.2f%%\n", stats->perc_ritirati);
+  printf("\t> Percentuale di 30L: %.2f%%\n", stats->perc_lode);
+  
+  return EXIT_SUCCESS;
 }
