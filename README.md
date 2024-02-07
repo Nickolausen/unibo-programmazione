@@ -13,6 +13,7 @@ Di seguito l'elenco degli esami che sono corretti (ipoteticamente, poiché i pro
 - [compiti_2h\esame_25-01-23](./compiti_2h/esame_25-01-23) - FUNZIONANTE
 - [compiti_2h\esame_11-01-23](./compiti_2h/esame_11-01-23)
 - [compiti_2h\esame_31-01-22](./compiti_2h/esame_31-01-22) - FUNZIONANTE
+- [compiti_1.5h\esame_08-07-22](./compiti_1.5h/esame_08-07-22) - manca dichiarazione strutture nel `main()`, per il resto la logica è implementata (forse qualche piccolo problema nel `chiudi_supermercato()`)
 
 ### Esami DA REVISIONARE
 - [compiti_2h\esame_21-06-22](./compiti_2h/esame_21-06-22) - comprensione del testo (manca `premio_agente_anno()`, il resto funziona)
