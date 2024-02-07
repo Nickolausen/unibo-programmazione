@@ -144,9 +144,9 @@ void leggi_appuntamenti(char *fileName, reparto *reparti, reparto_medici *repart
         singolo_turno *turno = &rep->turni[giorno_richiesto - 1][id_turno_richiesto - 1];
         
         /* Assegno il medico richiesto - se ancora risulta vuoto */
-        if (strcmp(turno->id_medico1, EMPTY_STRING))
+        if (strcmp(turno->id_medico1, EMPTY_STRING) == 0)
             strcpy(turno->id_medico1, id_medico_richiesto);
-        else if (strcmp(turno->id_medico2, EMPTY_STRING))
+        else if (strcmp(turno->id_medico2, EMPTY_STRING) == 0)
             strcpy(turno->id_medico2, id_medico_richiesto);
         
         /* Se supero il numero massimo di pazienti visitabili per quel turno, allora 
