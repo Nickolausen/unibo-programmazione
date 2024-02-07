@@ -208,6 +208,7 @@ tariffa *get_tariffa_by_id_medico(list_tariffa *tariffe, int id_medico)
     default_tariffa->costo_orario = DEFAULT_COSTO;
 
     aggiungi_tariffa(tariffe, &default_tariffa);
+    return default_tariffa;
 }
 
 void calcola_preventivi(list_tariffa *tariffe, paziente **list)
