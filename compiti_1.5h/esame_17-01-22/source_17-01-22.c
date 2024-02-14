@@ -105,15 +105,30 @@ studente *leggi_carriera(char *fileName)
   return out_list;
 }
 
+/* - da correggere - */
 void pulisci_lista(studente **list, int matricola)
 {
-  /* - da correggere - */
-  if (*list == NULL) return;
+  static studente *prev_node = NULL;
 
-  studente *next_node = (*list)->next;
-  free(*list);
+  /* PASSO BASE DELLA RICORSIONE */
+  if (*list == NULL) return; /* se ho raggiunto la fine della lista, esco dalla funzione */
+  
+  if ((*list)->matricola == matricola) /* se ho trovato la matricola corrispondente, elimino il nodo dalla lista */
+  {
+    /* Aggancio il nodo precedente a quello successivo, lasciando 'per aria' quello corrente */
+    prev_node->next = (*list)->next;
+    
+    /* Elimino quello corrente */
+    free(*list);
 
-  pulisci_lista(&next_node, matricola);
+    prev_node = NULL;
+  }
+  else /* altrimenti continuo a cercare */
+  {
+    prev_node = *list;
+    pulisci_lista(&((*list)->next), matricola);
+  }
+
 }
 
 int index_of(list_piano_di_studi *piano_studi, int matricola)
