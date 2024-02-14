@@ -1,18 +1,30 @@
 /* ALCUNI ESERCIZI IN PREPARAZIONE ALL'ESAME ORALE */
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <assert.h>
+#include <stdbool.h>
 
-typedef struct Node {
+typedef struct Node1 {
     int row;
     int col;
-    struct Node *next;
-} Node;
+    struct Node1 *next;
+} Node1;
+
+typedef struct Node2 {
+    int element;
+    struct Node2 *next;
+} Node2;
 
 typedef struct SecondNode {
     struct SecondNode *inner_list;
     struct SecondNode *next;
 } SecondNode;
+
+bool is_empty(Node2 *list)
+{
+    return list == NULL;
+}
 
 int **crea_matrice(int nr_righe, int nr_colonne) 
 {
@@ -65,14 +77,14 @@ void free_recursive_matrix(int **matrix, int nr_righe)
     free_recursive_matrix(matrix, nr_righe);
 }
 
-void inverti_lista(Node **lista) 
+void inverti_lista(Node1 **lista) 
 {
-    Node *current_node = *lista;
-    Node *prev_node = NULL;
+    Node1 *current_node = *lista;
+    Node1 *prev_node = NULL;
 
     while (current_node != NULL) 
     {
-        Node *prev_next = current_node->next;
+        Node1 *prev_next = current_node->next;
 
         current_node->next = prev_node;
         prev_node = current_node;
@@ -83,10 +95,15 @@ void inverti_lista(Node **lista)
     *lista = prev_node;
 }
 
-/* Crea una Linked List di nodi contenenti riga e colonna della matrice con corrispondente cella == 1 */
-Node *crea_lista(int **matrix, int n_row, int n_col)
+void recursive_inverti_lista(Node1 **list) 
 {
-    Node *out_list = NULL;
+   
+}
+
+/* Crea una Linked List di nodi contenenti riga e colonna della matrice con corrispondente cella == 1 */
+Node1 *crea_lista(int **matrix, int n_row, int n_col)
+{
+    Node1 *out_list = NULL;
 
     for (int row = 0; row < n_row; row++) 
     {
@@ -94,7 +111,7 @@ Node *crea_lista(int **matrix, int n_row, int n_col)
         {
             if (matrix[row][col] == 1)
             {
-                Node *new_element = (Node *)malloc(sizeof(Node));
+                Node1 *new_element = (Node1 *)malloc(sizeof(Node1));
                 assert(new_element != NULL);
 
                 new_element->row = row;
@@ -110,22 +127,22 @@ Node *crea_lista(int **matrix, int n_row, int n_col)
     return out_list;
 }
 
-void free_list(Node **list)
+void free_list(Node1 **list)
 {
     while (*list != NULL) 
     {
-        Node *next = (*list)->next;
+        Node1 *next = (*list)->next;
 
         free(*list);
         *list = next;
     }
 }
 
-void free_recursive_list(Node **list)
+void free_recursive_list(Node1 **list)
 {
     if (*list == NULL) return;
 
-    Node *next = (*list)->next;
+    Node1 *next = (*list)->next;
     free(*list);
 
     free_recursive_list(&next);
@@ -136,39 +153,134 @@ void free_recursive_list(Node **list)
  */
 void flatten_list(SecondNode **list)
 {
-    
+    /* ... */
 }
 
-void merge_list(Node **list1, Node **list2) 
+void aggiungi_nodo(Node2 **list, Node2 *node) 
 {
-    Node *second_list = *list2;
-
-    while (second_list != NULL) 
-    {
-        Node *current_first_list = *list1;
-        Node *prev_first_list = NULL;
-
-        while (current_first_list != NULL)
-        {
-            if (current_first_list->row < second_list->row || 
-                (current_first_list->row == second_list->row && current_first_list->col < second_list->col)) 
-                break;
-            
-            if (prev_first_list == NULL)
-            {
-                printf("");
-            } else 
-            {
-                prev_first_list->next = second_list;
-                second_list->next = current_first_list;
-            }
-
-            current_first_list = current_first_list->next;
-        }
-
-
-        second_list = second_list->next;
+    if (*list == NULL) {
+        *list = node;
+        return; 
     }
+
+    Node2 *current_node = *list;
+    Node2 *prev_node = NULL;
+
+    while (current_node != NULL) 
+    {
+        if (node->element <= current_node->element)
+            break;
+        
+        prev_node = current_node;
+        current_node = current_node->next;
+    }
+
+    node->next = current_node;
+
+    if (prev_node != NULL)
+        prev_node->next = node;
+    else
+        *list = node;
+}
+
+void tail_insert(Node2 **list, Node2 *node)
+{
+    if (is_empty(*list))
+    {
+        *list = node;
+        return;
+    }
+
+    Node2 *current_node = *list;
+    Node2 *prev_node = NULL;
+
+    while (current_node != NULL) 
+    {
+        prev_node = current_node;
+        current_node = current_node->next;
+    }
+
+    prev_node->next = node;
+}
+
+Node2 *genera_lista_esempio(int nr_nodi) 
+{
+    static int idx = 0;
+    idx++;
+    srand(time(NULL));
+    Node2 *out_list = NULL;
+
+    for (int i = 0; i < nr_nodi; i++) 
+    {
+        Node2 *new_node = (Node2 *)malloc(sizeof(Node2));
+        assert(new_node != NULL);
+
+        if (idx % 2 == 0)
+            new_node->element = 2 * i + 1;
+        else
+            new_node->element = 2 * i;
+
+        new_node->next = NULL;
+
+        aggiungi_nodo(&out_list, new_node);
+    }
+
+    return out_list;
+}
+
+void print_list(Node2 *list) 
+{
+    if (is_empty(list)) 
+    {
+        printf("List is empty!\n");
+        return;
+    }    
+
+    Node2 *current_node = list;
+    int idx = 0;
+    while (current_node != NULL) 
+    {
+        printf("[%d], Value: %d\n", idx++, current_node->element);
+        current_node = current_node->next;
+    }
+
+    putchar('\n');
+}
+
+/* Date due linked list ORDINATE per 'elemento' CRESCENTE, effettuare il merge sulla lista1 */
+void merge_list(Node2 **list1, Node2 *list2) 
+{
+    /* Il merge funziona!! Manca solo l'ordinamento */
+    Node2 *p_first_list = *list1;
+    Node2 *p_second_list = list2; 
+
+    while (p_first_list != NULL && p_second_list != NULL) 
+    {
+        if (p_first_list->element <= p_second_list->element)
+        {
+            Node2 *prev_next = p_first_list->next;
+            Node2 *prev_next2 = p_second_list->next;
+
+            p_first_list->next = p_second_list;
+            p_second_list->next = prev_next;
+
+            p_first_list = prev_next;
+            p_second_list = prev_next2;
+        }
+        else 
+        {
+            p_first_list = p_first_list->next;
+        }
+    }
+}
+
+Node2 *create_node(int value) 
+{
+    Node2 *output = (Node2 *)malloc(sizeof(Node2));
+    output->element = value;
+    output->next = NULL;
+
+    return output;
 }
 
 int main() 
@@ -176,7 +288,32 @@ int main()
     int n_col = 10, n_row = 10;
 
     int **matrix = crea_matrice(n_row, n_col);
-    print_matrix(matrix, n_row, n_col);
+    // print_matrix(matrix, n_row, n_col);
+
+    Node2 *list1 = genera_lista_esempio(5);
+    // aggiungi_nodo(&list1, create_node(1));
+    // aggiungi_nodo(&list1, create_node(3));
+    // aggiungi_nodo(&list1, create_node(4));
+    // aggiungi_nodo(&list1, create_node(5));
+
+    Node2 *list2 = genera_lista_esempio(10);
+    // aggiungi_nodo(&list2, create_node(2));
+    // aggiungi_nodo(&list2, create_node(3));
+    // aggiungi_nodo(&list2, create_node(7));
+
+    printf("=== BEFORE merge:\n\n");
+    printf("> LIST 1: \n");
+    print_list(list1);
+    printf("> LIST 2: \n");
+    print_list(list2);
+
+    merge_list(&list1, list2);
+
+    printf("=== AFTER merge:\n\n");
+    printf("> LIST 1: \n");
+    print_list(list1);
+    printf("> LIST 2: \n");
+    print_list(list2);
 
     return 0;
 }
