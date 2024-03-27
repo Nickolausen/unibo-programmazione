@@ -25,7 +25,7 @@ Scrivere un programma C dove sono inizializzate una variabile di tipo `int`, una
 
 Modificare il contenuto di ogni variabile e mostrare nuovamente le varie informazioni. Porre attenzione nel mostrare messaggi di output dettagliati che chiariscano ciò che si visualizza, in modo che il programma risulti un valido ausilio per spiegare il funzionamento dei puntatori.
 
----
+
 [^1]: _Una buona reference online dal punto di vista teorico del funzionamento del Q-Learning è la seguente: https://www.baeldung.com/cs/epsilon-greedy-q-learning_
 
 [^2]: _La consegna parla di una Q-Table come matrice di 4 colonne (le direzioni percorribili dal robot) e di 5 stati; per come l'abbiamo strutturata noi, abbiamo considerato gli stati come ogni singola cella del labirinto, avendo quindi in totale NRROW * NRCOL righe (dove NRROW e NRCOL sono rispettivamente le righe e colonne del labirinto);_
