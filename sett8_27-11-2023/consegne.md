@@ -8,11 +8,11 @@ Realizzare un programma che permetta all’utente di interagire con l’algoritm
 | Giorno         | Giorno della settimana in cui si vuole andare al ristorante (vero se venerdì oppure sabato, falso diversamente) |
 | Fame           | Siamo affamati (vero, falso)                      |
 | Affollato     | Quante persone sono presenti nel ristorante (nessuno, qualcuno, pieno) |
-| Prezzo         | Categoria di costo del ristorante ($, $$, $$$)     |
+| Prezzo         | Categoria di costo del ristorante (`$`, `$$`, `$$$`)     |
 | Pioggia        | Fuori sta piovendo (vero, falso)                   |
 | Prenotazione   | Abbiamo prenotato (vero, falso)                   |
 | Tipo           | Tipo di ristorante (italiano, francese, fast-food, thai) |
-| Attesa stimata| Stima del tempo di attesa (<10, 10-29, 30-60, >60) |
+| Attesa stimata| Stima del tempo di attesa ($<10$, $10-29$, $30-60$, $>60$) |
 
 L’algoritmo deve lavorare sia con lettura da file che con inserimento dati dell’utente, opzione specificata da riga di comando. La fase di training deve leggere il training set da file specificato da riga di comando. Il file di training contiene una riga per ogni ipotesi di allenamento. Se l’inserimento dati avviene da tastiera, l’utente dovrà essere guidato all’inserimento delle ipotesi di allenamento.
 
