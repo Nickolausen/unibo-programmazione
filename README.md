@@ -1,4 +1,4 @@
-# Elaborati corso di programmazione
+# Elaborati corso di Programmazione
 Esercizi settimanali del corso di 
 
 **00819_1 - Programmazione (CL.A); A.A. 2023/24, LT Ingegneria e Scienze Informatiche, Università di Bologna - Campus di Cesena.**
