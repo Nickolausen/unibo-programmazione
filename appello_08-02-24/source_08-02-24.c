@@ -1,4 +1,7 @@
-/* Nicholas Magi, 0001113915 */
+/*
+ * N.B.: La prova fa riferimento al file T1.
+ * Nicholas Magi, 0001113915 
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -281,12 +284,16 @@ pagella *prepara_pagella_studente(studente *elenco_studenti, char *id_studente)
     return out_pagella;
 }
 
+/* Errore commesso nel file consegnato: aver trattato la pila 'pagella' come se fosse una linked list ordinaria! 
+ * Essendo una pila, la lettura si fa tramite il metodo pop() - ciò implica che ogni elemento estratto va salvato in una lista temporanea,
+ * che servirà a fine funzione per ricostruire la lista orginaria.
+ */
 void stampa_pagella_studente(pagella **pagella_da_stampare, professore *professori, materia *materie) 
 {
     pagella *temp_list = NULL;
     pagella *current_node = NULL;
 
-    while ((current_node = pop_pagella(pagella_da_stampare)) != NULL) /* Scorro tutti gli elementi della pagella */
+    while ((current_node = pop_pagella(pagella_da_stampare)) != NULL) /* Scorro tutti gli elementi della pagella - PILA */
     {
         /* Cerco il professore che insegna quella determinata materia (con funzioni ausiliarie per migliorare la leggibilità del codice) */
         professore prof = 
