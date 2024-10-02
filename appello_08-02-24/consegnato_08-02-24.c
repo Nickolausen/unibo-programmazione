@@ -1,5 +1,6 @@
 /* Nicholas Magi, 0001113915 */
 /* 
+ * N.B.: La prova fa riferimento al file T1.
  * Valutazione della prova: 26/30 - per un'eventuale correzione, guarda il file 'source_08-02-24.c'
  */
 #include <stdio.h>
