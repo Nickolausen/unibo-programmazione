@@ -184,6 +184,7 @@ professore find_professore(professore *professori, char *id_professore)
     return output;
 }
 
+/* RICHIESTA DA CONSEGNA - Punti assegnati: 14/14 */
 studente *leggi_file(char *fileName) 
 {
     studente *out_list = NULL;
@@ -231,6 +232,7 @@ studente *leggi_file(char *fileName)
     return out_list;
 }
 
+/* RICHIESTA DA CONSEGNA - Punti assegnati: 8/8 */
 pagella *prepara_pagella_studente(studente *elenco_studenti, char *id_studente) 
 {
     studente *stud = find_studente(elenco_studenti, id_studente);
@@ -273,6 +275,7 @@ pagella *prepara_pagella_studente(studente *elenco_studenti, char *id_studente)
     return out_pagella;
 }
 
+/* RICHIESTA DA CONSEGNA - Punti assegnati: 0/4 - guarda file 'source_08-02-24.c' per motivazione e correzione */
 void stampa_pagella_studente(pagella *pagella_da_stampare, professore *professori, materia *materie) 
 {
     pagella *current_node = pagella_da_stampare;
@@ -298,6 +301,7 @@ void stampa_pagella_studente(pagella *pagella_da_stampare, professore *professor
     }
 }
 
+/* RICHIESTA DA CONSEGNA - Punti assegnati: 4/4 */
 int main() 
 {
     professore professori[NR_PROFESSORI]; /* Vettore dato e ordinato */
