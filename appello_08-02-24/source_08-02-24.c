@@ -1,6 +1,6 @@
 /*
  * N.B.: La prova fa riferimento al file T1.
- * Nicholas Magi, 0001113915 
+ * Nicholas Magi, ********** 
  */
 #include <stdio.h>
 #include <stdlib.h>
