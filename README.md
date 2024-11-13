@@ -39,7 +39,11 @@ Non è ammessa l'installazione di alcun programma durante l'esame.
 
 L'obiettivo generale è quello di scrivere un codice **ben ragionato** e **non necessariamente funzionante**, di fatti anche scrivere il codice su un foglio di blocco note è permesso. Per la mole di lavoro da portare a termine in 2ore / 1ora e 30 è **improbabile riuscire ad avviare il proprio programma**.
 
-Per svolgere l'esame scritto, l'iscrizione all'appello tramite portale AlmaEsami è **obbligatoria**, mentre per sostenere l'esame orale non è necessaria.
+Per svolgere l'esame scritto devono obbligatoriamente sussistere due prerequisiti: 
+- iscrizione ad un appello tramite portale AlmaEsami;
+- aver consegnato tutti gli elaborati previsti e aver ricevuto un esito positivo per ciascuno;
+
+Per sostenere l'esame orale non è necessario iscriversi ad un appello tramite portale AlmaEsami, ma è **obbligatorio** aver superato l'esame scritto (prova superata **se e solo se** voto della prova $>= 18$).
 
 ### Esame orale
 
