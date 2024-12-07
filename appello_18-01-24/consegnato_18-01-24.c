@@ -1,4 +1,4 @@
-/* Nicholas Magi, Matricola: 0001113915 */
+/* Nicholas Magi, Matricola: ********** */
 /* 
  * Valutazione della prova: 13/30 - 
  * per la correzione (ipotetica, non confermata) guarda il file 'source_18-01-24.c' 
