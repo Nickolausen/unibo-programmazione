@@ -1,4 +1,4 @@
-/* Nicholas Magi, Matricola: 0001113915 */
+/* Nicholas Magi, Matricola: ********** */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
